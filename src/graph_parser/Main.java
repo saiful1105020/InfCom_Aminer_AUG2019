@@ -205,7 +205,6 @@ public class Main {
         cs = new CitationStat(Constants.NUM_KEYWORDS-1);
         System.out.println(cs.toString());
          */
-        
         Scanner input = new Scanner(System.in);
         /*
         int keywordId = 0;
@@ -217,7 +216,7 @@ public class Main {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        */
+         */
         int n = 0;
         ArrayList<String> queryTerms = new ArrayList<String>();
         System.out.println("Number of terms: ");
@@ -235,9 +234,13 @@ public class Main {
         }
         Query query = new Query(queryTerms, Constants.OR_PREDICATE);
         KICQ augmentedQuery = new KICQ(query);
-        System.out.println(augmentedQuery);
-        
-        System.exit(0);
+
+        //System.out.println(augmentedQuery);
+        long startTime = System.nanoTime();
+        BasicExplore solve = new BasicExplore(augmentedQuery);
+        long endTime = System.nanoTime();
+        long totalTime = (endTime - startTime)/1000000;
+        System.out.println(totalTime+" ms");
     }
 
 }

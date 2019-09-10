@@ -12,8 +12,8 @@ package graph_parser;
 public class Constants {
     public static final String INPUT_DIR = "../Dataset_Preprocessed/small_dataset";
     public static final int MIN_AUTH_ID = 1;
-    public static final int MAX_AUTH_ID = 100000;
-    public static final int NUM_KEYWORDS = 1000;
+    public static final int MAX_AUTH_ID = 1000;
+    public static final int NUM_KEYWORDS = 100;
     public static final double MATCHING_THRESHOLD = 0.20;
     
     public static boolean LOAD_GRAPH = false;

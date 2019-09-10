@@ -47,7 +47,7 @@ public class Article {
     
     public void addAuthor(int authorId)
     {
-        if(authorId<=Constants.MAX_AUTH_ID)
+        if(authorId<=Constants.MAX_AUTH_ID && (!this.authors.contains(authorId)))
         {
             this.authors.add(authorId);
         }
