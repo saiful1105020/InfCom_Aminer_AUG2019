@@ -65,7 +65,93 @@ public class QEG {
     public Set<Integer> findMaxCore(int k)
     {
         Set<Integer> Vk = new LinkedHashSet<Integer>();
+        
+        int minDeg = Integer.MAX_VALUE;
+        int startVertex=Constants.INVALID_INT;
+        
+        HashMap<Integer,Integer> vDegree = new HashMap<Integer, Integer>();
+        HashMap<Integer,Boolean> visited = new HashMap<Integer, Boolean>();
+        
+        for(int nodeId:this.V)
+        {
+            int degree = idNodeMap.get(nodeId).adjList.size();
+            vDegree.put(nodeId, degree);
+            visited.put(nodeId, false);
+            if(degree<minDeg)
+            {
+                minDeg = degree;
+                startVertex = nodeId;
+            }
+        }
+        
+        this.updateDegree(startVertex, vDegree, visited, k);
+        
+        for(int nodeId:this.V)
+        {
+            if(!visited.get(nodeId))
+            {
+                updateDegree(nodeId, vDegree, visited, k);
+            }
+        }
+        
+        for(int nodeId:this.V)
+        {
+            if(vDegree.get(nodeId)>=k)
+            {
+                Vk.add(nodeId);
+            }
+        }
+        
         return Vk;
     }
     
+    public Boolean updateDegree(int nodeId, HashMap<Integer, Integer> vDegree, HashMap<Integer, Boolean> visited, int k)
+    {
+        if(nodeId==Constants.INVALID_INT)
+        {
+            System.err.println("Invalid input in QEG.updateDegree()");
+        }
+        visited.put(nodeId, true);
+        
+        Node vertex = idNodeMap.get(nodeId);
+        for(int adjId:vertex.adjList)
+        {
+            //if vertex has degree smaller than k, adjacent vertices will be affected
+            if(vDegree.get(nodeId)<k)
+            {
+                int prevDeg = vDegree.get(adjId);
+                vDegree.put(adjId, prevDeg-1);
+            }
+            
+            Boolean isVisited = visited.get(adjId);
+            if(!isVisited)
+            {
+                //if after processing, adjacent vertices' degree is less than k, the cureent vertex will be affected
+                if(updateDegree(adjId, vDegree, visited, k))
+                {
+                    int prevDeg = vDegree.get(nodeId);
+                    vDegree.put(nodeId, prevDeg-1);
+                }   
+            }
+        }
+        
+        return (vDegree.get(nodeId)<k);
+    }
+    
+    public void printSubgraph(Set<Integer> vertices)
+    {
+        for(int nodeId:vertices)
+        {
+            String nodeStr = "["+nodeId+"]->";
+            if(!idNodeMap.containsKey(nodeId))
+            {
+                System.err.println("Error inside QEG.printSubgraph(): Vertex not in QEG");
+            }
+            Node vertex = idNodeMap.get(nodeId);
+            Set<Integer> temp = new HashSet<Integer>(vertex.adjList);
+            temp.retainAll(vertices);
+            nodeStr+=temp;
+            System.out.println(nodeStr);
+        }
+    }
 }

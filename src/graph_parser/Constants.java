@@ -21,4 +21,6 @@ public class Constants {
     
     public static final int AND_PREDICATE = 1;
     public static final int OR_PREDICATE = 0;
+    
+    public static final int INVALID_INT = Integer.MIN_VALUE;
 }
