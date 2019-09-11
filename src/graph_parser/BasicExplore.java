@@ -5,6 +5,7 @@
  */
 package graph_parser;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -30,8 +31,15 @@ public class BasicExplore {
             Set<Integer> Vk = this.qeg.findMaxCore(k);
             //this.qeg.printSubgraph(Vk);
             //Find set of connected components
+            ArrayList<Set> components = this.qeg.findConnectedComponents(Vk);
+            //System.out.println("Number of components: "+components.size());
+            for(int i=0;i<components.size();i++)
+            {
+                //System.out.println("Component "+i+": ");
+                //this.qeg.printSubgraph(components.get(i));
+                //assign score to each connected component
+            }
             
-            //assign score to each connected component
         }
     }
     

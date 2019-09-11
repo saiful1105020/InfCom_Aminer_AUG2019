@@ -62,6 +62,48 @@ public class QEG {
         System.out.println("Max Degree: "+maxDegree);
     }
     
+    public ArrayList<Set> findConnectedComponents(Set<Integer> vSet)
+    {
+        ArrayList<Set> components = new ArrayList<Set>();
+        HashMap<Integer,Boolean> visited = new HashMap<Integer, Boolean>();
+        
+        for(int nodeId:vSet)
+        {
+            visited.put(nodeId, false);
+        }
+        
+        for(int nodeId:vSet)
+        {
+            if(!visited.get(nodeId))
+            {
+                Set<Integer> C = new LinkedHashSet<Integer>();
+                dfsVisit(C, nodeId, vSet, visited);
+                components.add(C);
+            }
+        }
+        
+        return components;
+    }
+    
+    public void dfsVisit(Set<Integer> connectedComponent, int nodeId, Set<Integer> vSet, HashMap<Integer, Boolean> visited)
+    {
+        visited.put(nodeId,true);
+        connectedComponent.add(nodeId);
+        
+        Node node = idNodeMap.get(nodeId);
+        Set<Integer> adj = new LinkedHashSet(node.adjList);
+        adj.retainAll(vSet);
+        
+        for(int v:adj)
+        {
+            if(!visited.get(v))
+            {
+                dfsVisit(connectedComponent, v, vSet, visited);
+            }
+        }
+        
+    }
+    
     public Set<Integer> findMaxCore(int k)
     {
         Set<Integer> Vk = new LinkedHashSet<Integer>();
