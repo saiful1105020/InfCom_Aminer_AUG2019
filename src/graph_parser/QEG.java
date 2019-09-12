@@ -58,6 +58,7 @@ public class QEG {
                 maxDegree = deg;
             }
             idNodeMap.put(nodeId, node);
+            //System.out.println(node);
         }    
         
         System.out.println("Max Degree: "+maxDegree);
