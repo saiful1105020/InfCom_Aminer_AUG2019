@@ -8,6 +8,7 @@ package graph_parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  *
@@ -22,6 +23,7 @@ public class CitationStat {
     int maxCitations = 0;
 
     ArrayList<Integer> allCitations = new ArrayList<Integer>();
+    HashMap<Integer, Double> citationPercentile = new HashMap<Integer, Double>();
 
     public CitationStat(int keywordId) {
         this.keywordId = keywordId;
@@ -60,6 +62,15 @@ public class CitationStat {
         }
 
         int numAuthors = allCitations.size();
+        
+        Collections.sort(allCitations);
+        for(int i=0;i<numAuthors;i++)
+        {
+            int citationCout = allCitations.get(i);
+            double percentile = ((double)(i+1))/numAuthors;
+            citationPercentile.put(citationCout, percentile);
+        }
+        
         if (numAuthors > 0) {
             minCitations = Collections.min(allCitations);
             maxCitations = Collections.max(allCitations);

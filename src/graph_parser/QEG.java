@@ -5,6 +5,7 @@
  */
 package graph_parser;
 
+import com.sun.corba.se.impl.orbutil.closure.Constant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,6 +61,7 @@ public class QEG {
         }    
         
         System.out.println("Max Degree: "+maxDegree);
+        System.out.println("Total Nodes: "+this.V.size());
     }
     
     public ArrayList<Set> findConnectedComponents(Set<Integer> vSet)
@@ -145,6 +147,21 @@ public class QEG {
         }
         
         return Vk;
+    }
+    
+    public double score(Set<Integer> vSet, int k)
+    {
+        double s=0.0;
+        s+=((Constants.BETA*k)/maxDegree);
+        
+        double sum=0.0;
+        for(int v:vSet)
+        {
+            Node node = idNodeMap.get(v);
+            sum+=node.score;
+        }
+        s+=((1-Constants.BETA)*(sum/this.V.size()));
+        return s;
     }
     
     public Boolean updateDegree(int nodeId, HashMap<Integer, Integer> vDegree, HashMap<Integer, Boolean> visited, int k)

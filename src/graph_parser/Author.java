@@ -161,7 +161,7 @@ public class Author {
         {
             CountPair cp = this.keywordCounts.get(i);
             int citations = (int)(long)cp.getCitationCount();
-            double score = (1.0*citations)/GlobalInvertedList.citationStats[i].getMaxCitations();
+            double score = GlobalInvertedList.citationStats[i].citationPercentile.get(citations);
             /*
             if(this.id==13 && i==454)
             {

@@ -23,4 +23,6 @@ public class Constants {
     public static final int OR_PREDICATE = 0;
     
     public static final int INVALID_INT = Integer.MIN_VALUE;
+    
+    public static double BETA = (0.024637681159420288/1.024637681159420288);
 }

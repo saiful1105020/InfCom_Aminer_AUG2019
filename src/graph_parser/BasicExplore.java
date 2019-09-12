@@ -35,9 +35,13 @@ public class BasicExplore {
             //System.out.println("Number of components: "+components.size());
             for(int i=0;i<components.size();i++)
             {
-                //System.out.println("Component "+i+": ");
-                //this.qeg.printSubgraph(components.get(i));
+                System.out.println("Component "+i+": ");
+                Set<Integer> componentNodes = components.get(i);
+                this.qeg.printSubgraph(componentNodes);
                 //assign score to each connected component
+                double score = this.qeg.score(componentNodes, k);
+                System.out.println("Score: "+score);
+                System.out.println("--------\n");
             }
             
         }
