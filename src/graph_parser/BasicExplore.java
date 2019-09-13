@@ -40,6 +40,17 @@ public class BasicExplore {
         this.Q = new PriorityQueue<Community>(KICQ.r, CommunityComparator);
 
         this.solve();
+        
+        //Result
+        /*
+        for(int i=0;i<KICQ.r;i++)
+        {
+            Community c = this.Q.remove();
+            System.out.println("Top-"+(KICQ.r-i)+": ");
+            this.qeg.printSubgraph(c.getvSet());
+            System.out.println("Score: "+c.getScore());
+        }
+        */
     }
 
     public void solve() {
@@ -84,14 +95,6 @@ public class BasicExplore {
 
         }
         
-        //Result
-        for(int i=0;i<KICQ.r;i++)
-        {
-            Community c = this.Q.remove();
-            System.out.println("Top-"+(KICQ.r-i)+": ");
-            this.qeg.printSubgraph(c.getvSet());
-            System.out.println("Score: "+c.getScore());
-        }
     }
 
 }

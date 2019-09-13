@@ -45,6 +45,11 @@ public class Node {
         }
     }
 
+    public int getDegree()
+    {
+        return this.adjList.size();
+    }
+    
     @Override
     public String toString() {
         return "Node{" + "id=" + id + ", adjList=" + adjList + ", score=" + score + '}';

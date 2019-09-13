@@ -121,6 +121,9 @@ public class Main {
     }
 
     public static void readGraph() {
+        long totalDegree=0;
+        long totalNodes=0;
+        
         try {
             //read from Graph.txt
             Scanner input = new Scanner(new File("Graph.txt"));
@@ -131,6 +134,10 @@ public class Main {
 
                 Author author = new Author(authorId);
                 JSONArray jCoAuths = (JSONArray) jo.get("co-authors");
+                
+                totalDegree+=jCoAuths.size();
+                totalNodes++;
+                
                 for (int i = 0; i < jCoAuths.size(); i++) {
                     JSONObject jCoAuth = (JSONObject) jCoAuths.get(i);
                     int coAuthorId = (int) ((long) jCoAuth.get("coauth-id"));
@@ -158,7 +165,9 @@ public class Main {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, e);
         }
 
-        System.out.println(authors[1].toJSON().toString());
+        //System.out.println(authors[1].toJSON().toString());
+        System.out.println("Number of nodes: "+totalNodes);
+        System.out.println("Number of edges: "+totalDegree/2);
     }
 
     public static void main(String[] args) {
@@ -236,11 +245,24 @@ public class Main {
         KICQ augmentedQuery = new KICQ(query);
 
         //System.out.println(augmentedQuery);
+        int runs = 10000;
         long startTime = System.nanoTime();
-        BasicExplore solve = new BasicExplore(augmentedQuery);
+        for(int run=0;run<runs;run++)
+        {
+            PruneAndExplore solve = new PruneAndExplore(augmentedQuery);
+        }
         long endTime = System.nanoTime();
-        long totalTime = (endTime - startTime)/1000000;
-        System.out.println(totalTime+" ms");
+        long totalTime = (endTime - startTime)/(1000000);
+        System.out.println("PRUNE: "+totalTime+" ms");
+        
+        startTime = System.nanoTime();
+        for(int run=0;run<runs;run++)
+        {
+            BasicExplore solve2 = new BasicExplore(augmentedQuery);
+        }
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime)/(1000000);
+        System.out.println("BASIC: "+totalTime+" ms");
     }
 
 }

@@ -1,22 +1,19 @@
 First Approach (Intuitive)
 --------------------------
-beta = 0: max score of any keyword = ?
-0.024154589371980673 
+beta = 0: max score of any keyword = a 
 
-0.024154589371980673 * (1.00/1.024154589371980673)
+beta = 1: max score of any keyword = b
 
-beta = 1: max score of any keyword = ?
-1
+x1 = (a/ab) = 1/b
+x2 = (b/ab) = 1/a
 
-1 * (0.024154589371980673/1.024154589371980673)
-
-score = [(k/kmax)*maxInfScore + (infScore*maxCohesionScore)]/(maxInfScore+maxCohesionScore))
+score = beta * x1 * inf_score + (1-beta) * x2 * cohesiveness_score
 
 Second Approach (Empirical)
 ---------------------------
 * Design a metric to evaluate community
 * for beta=[0.0 0.01 0.02 ... 1.00] evaluate metric and decide the optimal value
 
-Also try alternative score functions
-------------------------------------
+Also try alternative score functions (Intuitive)
+------------------------------------------------
 (sum(score)*log(1+k))/(|V|*log(1+kmax))
