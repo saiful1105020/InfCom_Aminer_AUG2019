@@ -48,7 +48,11 @@ public class PruneAndExplore {
         }
 
         this.rTopScore = this.Q.peek().getScore();
-        this.solve(this.qeg.V, KICQ.k_min);
+        
+        if(this.qeg.V.size()!=0)
+        {
+            this.solve(this.qeg.V, KICQ.k_min);
+        }
         
         /*
         for(int i=0;i<KICQ.r;i++)

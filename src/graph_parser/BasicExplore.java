@@ -39,7 +39,10 @@ public class BasicExplore {
         };
         this.Q = new PriorityQueue<Community>(KICQ.r, CommunityComparator);
 
-        this.solve();
+        if(this.qeg.V.size()!=0)
+        {
+            this.solve();
+        }
         
         //Result
         /*

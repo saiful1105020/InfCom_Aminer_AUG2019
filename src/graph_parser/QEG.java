@@ -38,7 +38,14 @@ public class QEG {
             if (kicq.predicate == Constants.OR_PREDICATE) {
                 this.V.addAll(termVertices);
             } else {
-                this.V.retainAll(termVertices);
+                if(i==0)
+                {
+                    this.V = new LinkedHashSet<Integer>(termVertices);
+                }
+                else
+                {
+                    this.V.retainAll(termVertices);
+                }
             }
         }
 
@@ -54,8 +61,8 @@ public class QEG {
             //System.out.println(node);
         }
 
-        System.out.println("Max Degree: " + maxDegree);
-        System.out.println("Total Nodes: " + this.V.size());
+        //System.out.println("Max Degree: " + maxDegree);
+        //System.out.println("Total Nodes: " + this.V.size());
     }
 
     public ArrayList<Set> findConnectedComponents(Set<Integer> vSet) {

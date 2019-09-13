@@ -241,7 +241,7 @@ public class Main {
             queryTerms.add(input.nextLine());
             System.out.println(queryTerms.get(i));
         }
-        Query query = new Query(queryTerms, Constants.OR_PREDICATE);
+        Query query = new Query(queryTerms, Constants.AND_PREDICATE);
         KICQ augmentedQuery = new KICQ(query);
 
         //System.out.println(augmentedQuery);
