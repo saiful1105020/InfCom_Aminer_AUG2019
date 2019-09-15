@@ -1,0 +1,41 @@
+ssh e27890@wight.seg.rmit.edu.au
+Pass: 
+eun#319%
+GPU: 
+ssh segsresap07
+Working Dir: 
+cd /research/remote/petabyte/users/eunus/InfCom
+
+From Local to Server:
+pscp "D:\Google Drive\Academic Contents\MS\InfCom Implementation\Preprocessing\Step 5 (Augment with Keywords)\keywordEmbeddingSingleFile.py" e27890@wight.seg.rmit.edu.au:/research/remote/petabyte/users/eunus/InfCom/PreProcessAminer/Preprocessing/CodeDir
+
+Kill processes for a particular user:
+ps U e27890 | cut -d " " -f 1 | xargs kill
+
+Pause:
+kill -STOP PID
+Resume:
+kill -CONT PID
+
+
+Shell Script:
+#!/bin/bash
+for var in {0..7}
+do
+	python keywordEmbeddingSingleFile.py $var &
+	echo "FROM SHELL: File ".$var." Processing"
+done
+
+Current Status (1K):
+---------------
+File 0-23 Running in RMIT server
+File 26,146 Processing in Yoga 
+File 24,25,134,147,148,149,150,151,152,153,154 Done [Yoga]
+
+PIDs:
+52971 - 52994
+
+(20K)
+------
+File 148 Done
+51038.KEY_EMBED_2 (File 0)

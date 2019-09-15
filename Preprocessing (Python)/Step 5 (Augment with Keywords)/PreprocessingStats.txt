@@ -1,0 +1,3 @@
+Runtime for processing 100 articles:
+923
+846

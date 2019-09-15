@@ -1,0 +1,53 @@
+The entire dataset is divided into three folders
+Unzipped data is 120 GB. 
+
+Dataset is not currently in the disk. Just download aminer_papers_[0-2].zip from https://aminer.org/open-academic-graph and unzip.
+
+Data Summarization
+------------------
+1. summarize_[0-2] only keeps paper ID, author info, keywords, and the number of citations.
+	- LANG != EN are deleted
+	- If title is not in English, deleted
+	- If no keyword tagged by authors, deleted
+	- If citation count not found, deleted
+	
+input: aminer_papers_[0-2] (unzipped)
+output: Data_Preprocessed->folder[0-2]
+	
+2. Now the dataset is about 4.78GB, more managable
+	- Total Papers: 31,513,797
+	
+3. fix_summary_encoding tries to fix encoding error
+
+input: Data_Preprocessed->folder[0-2]
+output: Data_Preprocessed->fixed_encoding_folder[0-2]
+
+4. List authors: each author is assigned an ID
+	ReadAuthors_[0-2].py
+	fix_read_authors.py
+	combine_authors.py
+
+input: Data_Preprocessed->fixed_encoding_folder[0-2]
+output: authors_fixed_all.txt
+
+
+5. replace_auth_names.py replaces author names with author IDs in fixed_encoding_folder[0-2] files
+
+input: Data_Preprocessed->fix_encoding_folder[0-2]
+output: author_name_replaced files
+
+6. Keyword Extraction & Augmentation
+------------------------------------
+1. ReadKeywords.py lists all keywords with their frequency
+2. correct_keywords.py solves some formatting issues (keyword containing :)
+3. KeywordEmbeddingSingleFile.py augments author_name_replaced/summary_author_id_$fileId with relevant top 1K keywords. A command line argument given for file index. Shell script to run multiple files parallelly in multiple cores:
+
+#!/bin/bash
+for var in {0..23}
+do
+	python keywordEmbeddingSingleFile.py $var &
+	echo "FROM SHELL: File ".$var." Processing"
+done
+
+Output: authId_keywordId folder
+
