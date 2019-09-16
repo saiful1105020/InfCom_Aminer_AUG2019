@@ -54,7 +54,6 @@ public class PruneAndExplore {
             this.solve(this.qeg.V, KICQ.k_min);
         }
         
-        /*
         for(int i=0;i<KICQ.r;i++)
         {
             Community c = this.Q.remove();
@@ -62,7 +61,7 @@ public class PruneAndExplore {
             this.qeg.printSubgraph(c.getvSet());
             System.out.println("Score: "+c.getScore());
         }
-        */
+        
     }
 
     public void solve(Set<Integer> H, int k) {

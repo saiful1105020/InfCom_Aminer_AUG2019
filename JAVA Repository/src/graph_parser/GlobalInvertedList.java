@@ -27,9 +27,9 @@ import org.json.simple.parser.ParseException;
  */
 public class GlobalInvertedList {
 
-    public static Set<Integer>[] IL = new LinkedHashSet[Constants.NUM_KEYWORDS];
+    public static Set<Integer>[] IL = new LinkedHashSet[Constants.NUM_KEYWORDS+1];
 
-    public static CitationStat[] citationStats = new CitationStat[Constants.NUM_KEYWORDS];
+    public static CitationStat[] citationStats = new CitationStat[Constants.NUM_KEYWORDS+1];
     public static String fileName = "invertedList.txt";
 
     public static void compute() {

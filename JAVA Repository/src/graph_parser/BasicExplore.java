@@ -45,7 +45,7 @@ public class BasicExplore {
         }
         
         //Result
-        /*
+        
         for(int i=0;i<KICQ.r;i++)
         {
             Community c = this.Q.remove();
@@ -53,7 +53,7 @@ public class BasicExplore {
             this.qeg.printSubgraph(c.getvSet());
             System.out.println("Score: "+c.getScore());
         }
-        */
+        
     }
 
     public void solve() {

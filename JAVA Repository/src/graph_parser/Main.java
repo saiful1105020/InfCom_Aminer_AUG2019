@@ -245,7 +245,7 @@ public class Main {
         KICQ augmentedQuery = new KICQ(query);
 
         //System.out.println(augmentedQuery);
-        int runs = 10000;
+        int runs = 1;
         long startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
         {

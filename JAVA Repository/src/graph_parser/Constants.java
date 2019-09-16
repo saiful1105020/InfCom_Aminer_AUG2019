@@ -12,7 +12,7 @@ package graph_parser;
 public class Constants {
     public static final String INPUT_DIR = "../Dataset_Preprocessed/small_dataset";
     public static final int MIN_AUTH_ID = 1;
-    public static final int MAX_AUTH_ID = 1000;
+    public static final int MAX_AUTH_ID = 10000;
     public static final int NUM_KEYWORDS = 100;
     public static final double MATCHING_THRESHOLD = 0.20;
     
@@ -24,5 +24,5 @@ public class Constants {
     
     public static final int INVALID_INT = Integer.MIN_VALUE;
     
-    public static double BETA = (0.024637681159420288/1.024637681159420288);
+    public static double BETA = 0.85;
 }
