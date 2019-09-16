@@ -17,7 +17,8 @@ public class Constants {
     public static final double MATCHING_THRESHOLD = 0.20;
     
     public static boolean LOAD_GRAPH = false;
-    //public static boolean COMPUTE_INV_LIST = false;
+    public static boolean SHOW_OUTPUT = false;
+    public static boolean DEBUG_MODE = false;
     
     public static final int AND_PREDICATE = 1;
     public static final int OR_PREDICATE = 0;

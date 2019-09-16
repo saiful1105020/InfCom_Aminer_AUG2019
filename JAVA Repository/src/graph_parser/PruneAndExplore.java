@@ -55,20 +55,15 @@ public class PruneAndExplore {
             this.solve(this.qeg.V, KICQ.k_min);
         }
 
-        for (int i = 0; i < KICQ.r; i++) {
-            Community c = this.Q.remove();
-            System.out.println("Top-" + (KICQ.r - i) + ": " + c.getK() + "-core");
-            this.qeg.printSubgraph(c.getvSet());
-            System.out.println("Score: " + c.getScore());
+        if (Constants.SHOW_OUTPUT) {
+            for (int i = 0; i < KICQ.r; i++) {
+                Community c = this.Q.remove();
+                System.out.println("Top-" + (KICQ.r - i) + ": " + c.getK() + "-core");
+                this.qeg.printSubgraph(c.getvSet());
+                System.out.println("Score: " + c.getScore());
+            }
         }
 
-        /*
-        int nodeId=1414;
-        System.out.println("DBG: Degree of " + nodeId + ": " + qeg.idNodeMap.get(nodeId).adjList.size());
-        for(nodeId=1979;nodeId<=1984;nodeId++) {
-            System.out.println("DBG: Degree of " + nodeId + ": " + qeg.idNodeMap.get(nodeId).adjList.size());
-        }
-         */
     }
 
     public void solve(Set<Integer> H, int k) {
@@ -100,19 +95,6 @@ public class PruneAndExplore {
 
         //System.out.println("Updated k: " + k);
         Set<Integer> Vk = this.qeg.findMaxCore(H, k);
-
-        if (k == 6 && H.contains(1414)) {
-            System.out.println("DBG: 6-core output->");
-            if (!Vk.contains(1414)) {
-                System.err.println("Error! 1414 not found");
-            }
-            for (int tmp = 1979; tmp <= 1984; tmp++) {
-                if (!Vk.contains(tmp)) {
-                    System.err.println("Error! " + tmp + " not found");
-                }
-            }
-
-        }
 
         //if Vk empty, return
         ArrayList<Set> components = this.qeg.findConnectedComponents(Vk);

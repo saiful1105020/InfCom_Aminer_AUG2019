@@ -17,7 +17,6 @@ import java.util.HashMap;
 public class CitationStat {
 
     int keywordId;
-    //int totalCitations = 0;
     double avgCitations = 0.0;
     int minCitations = 0;
     int maxCitations = 0;

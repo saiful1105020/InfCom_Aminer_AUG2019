@@ -28,8 +28,6 @@ import org.json.simple.parser.ParseException;
 public class GlobalInvertedList {
 
     public static Set<Integer>[] IL = new LinkedHashSet[Constants.NUM_KEYWORDS+1];
-
-    //public static CitationStat[] citationStats = new CitationStat[Constants.NUM_KEYWORDS];
     public static String fileName = "invertedList.txt";
 
     public static void compute() {
@@ -76,15 +74,6 @@ public class GlobalInvertedList {
                 }
                 //invertedList[i] = keywordAuthors;
                 IL[keywordId] = new LinkedHashSet<Integer>(keywordAuthors);
-                
-                /*
-                if (keywordId == 2) {
-                    System.out.println(keywordId);
-                    System.out.println(totalAuthors);
-                    System.out.println(invertedList[keywordId]);
-                    System.exit(0);
-                }
-                 */
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(GlobalInvertedList.class.getName()).log(Level.SEVERE, null, ex);

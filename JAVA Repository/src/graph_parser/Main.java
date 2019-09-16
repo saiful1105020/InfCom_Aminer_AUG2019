@@ -44,7 +44,6 @@ public class Main {
                 try {
                     readArticle(file);
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 } catch (ParseException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -82,7 +81,6 @@ public class Main {
             ArrayList<Integer> articleAuthors = article.getAuthors();
             ArrayList<Integer> articleKeywords = article.getKeywords();
 
-            //System.out.println("Authors: "+articleAuthors.size()+" Keywords: "+articleKeywords.size());
             for (int j = 0; j < articleAuthors.size(); j++) {
                 Author articleAuthor = authors[articleAuthors.get(j)];
                 for (int k = 0; k < articleAuthors.size(); k++) {
@@ -112,7 +110,7 @@ public class Main {
         
         System.out.println("Number of articles read: " + numArticles);
 
-        System.out.println(authors[1].toJSON().toString());
+        //System.out.println(authors[1].toJSON().toString());
         //System.out.println(authors[1]);
     }
 
@@ -200,29 +198,10 @@ public class Main {
             //Read already computed graph
             readGraph();
             GlobalInvertedList.loadFromFile();
-            //System.out.println(authors[1].toJSON());
         }
 
-        /*
-        CitationStat cs = new CitationStat(0);
-        System.out.println(cs.toString());
-        cs = new CitationStat(Constants.NUM_KEYWORDS/2);
-        System.out.println(cs.toString());
-        cs = new CitationStat(Constants.NUM_KEYWORDS-1);
-        System.out.println(cs.toString());
-         */
-        Scanner input = new Scanner(System.in);
-        /*
-        int keywordId = 0;
-        try {
-            System.out.println("Keyword ID: ");
-            keywordId = Integer.parseInt(input.nextLine());
-            CitationStat cs = new CitationStat(keywordId);
-            System.out.println(cs.toString());
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-         */
+        
+        //Scanner input = new Scanner(System.in);
         int n = 0;
         ArrayList<String> queryTerms = new ArrayList<String>();
         /*
@@ -258,8 +237,7 @@ public class Main {
         }
         endTime = System.nanoTime();
         totalTime = (endTime - startTime)/(1000000);
-        System.out.println("PRUNE: "+totalTime+" ms");
-        
+        System.out.println("PRUNE: "+((double)totalTime)/runs+" ms");
         
         startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
@@ -268,7 +246,7 @@ public class Main {
         }
         endTime = System.nanoTime();
         totalTime = (endTime - startTime)/(1000000);
-        System.out.println("BASIC: "+totalTime+" ms");
+        System.out.println("BASIC: "+((double)totalTime)/runs+" ms");
         
     }
 
