@@ -155,24 +155,6 @@ public class Author {
         return jo;
     }
     
-    public void assignScore()
-    {
-        for(int i:this.keywordCounts.keySet())
-        {
-            CountPair cp = this.keywordCounts.get(i);
-            int citations = (int)(long)cp.getCitationCount();
-            double score = GlobalInvertedList.citationStats[i].citationPercentile.get(citations);
-            /*
-            if(this.id==13 && i==454)
-            {
-                System.out.println("Citation: "+citations);
-                System.out.println("Max Citations: "+GlobalInvertedList.citationStats[i].getMaxCitations());
-                System.out.println("Score: "+score);
-            }
-            */
-            this.keywordScore.put(i, score);
-        }
-    }
     
     public void setKeywordScore(int keyword, double score)
     {

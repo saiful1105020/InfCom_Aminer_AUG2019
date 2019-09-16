@@ -6,6 +6,7 @@
 package graph_parser;
 
 import com.sun.corba.se.impl.orbutil.closure.Constant;
+import static graph_parser.Main.authors;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,12 +39,9 @@ public class QEG {
             if (kicq.predicate == Constants.OR_PREDICATE) {
                 this.V.addAll(termVertices);
             } else {
-                if(i==0)
-                {
+                if (i == 0) {
                     this.V = new LinkedHashSet<Integer>(termVertices);
-                }
-                else
-                {
+                } else {
                     this.V.retainAll(termVertices);
                 }
             }
@@ -61,8 +59,20 @@ public class QEG {
             //System.out.println(node);
         }
 
-        //System.out.println("Max Degree: " + maxDegree);
-        //System.out.println("Total Nodes: " + this.V.size());
+        System.out.println("Max Degree: " + maxDegree);
+        System.out.println("Total Nodes: " + this.V.size());
+        /*
+        for(int i:this.V)
+        {
+            for(int j:idNodeMap.get(i).adjList)
+            {
+                if(!idNodeMap.get(j).adjList.contains(i))
+                {
+                    System.err.println("Adjacency matrix not symmetric");
+                }
+            }
+        }
+         */
     }
 
     public ArrayList<Set> findConnectedComponents(Set<Integer> vSet) {
@@ -102,38 +112,21 @@ public class QEG {
 
     public Set<Integer> findMaxCore(int k) {
         Set<Integer> Vk = new LinkedHashSet<Integer>();
+        Set<Integer> candidateNodes = new LinkedHashSet<Integer>();
 
         int minDeg = Integer.MAX_VALUE;
         int startVertex = Constants.INVALID_INT;
 
-        HashMap<Integer, Integer> vDegree = new HashMap<Integer, Integer>();
-        HashMap<Integer, Boolean> visited = new HashMap<Integer, Boolean>();
-
+        //HashMap<Integer, Integer> vDegree = new HashMap<Integer, Integer>();
+        //HashMap<Integer, Boolean> visited = new HashMap<Integer, Boolean>();
         for (int nodeId : this.V) {
             int degree = idNodeMap.get(nodeId).adjList.size();
-            vDegree.put(nodeId, degree);
-            visited.put(nodeId, false);
-            if (degree < minDeg) {
-                minDeg = degree;
-                startVertex = nodeId;
+            if (degree >= k) {
+                candidateNodes.add(nodeId);
             }
         }
 
-        this.updateDegree(startVertex, vDegree, visited, k);
-
-        for (int nodeId : this.V) {
-            if (!visited.get(nodeId)) {
-                updateDegree(nodeId, vDegree, visited, k);
-            }
-        }
-
-        for (int nodeId : this.V) {
-            if (vDegree.get(nodeId) >= k) {
-                Vk.add(nodeId);
-            }
-        }
-
-        return Vk;
+        return findMaxCore(candidateNodes, k);
     }
 
     public Set<Integer> findMaxCore(Set<Integer> subQEGNodes, int k) {
@@ -146,15 +139,18 @@ public class QEG {
         HashMap<Integer, Boolean> visited = new HashMap<Integer, Boolean>();
 
         for (int nodeId : subQEGNodes) {
-            Set<Integer> temp = idNodeMap.get(nodeId).adjList;
+            Set<Integer> temp = new LinkedHashSet<Integer>(idNodeMap.get(nodeId).adjList);
             temp.retainAll(subQEGNodes);
             int degree = temp.size();
             vDegree.put(nodeId, degree);
+
             visited.put(nodeId, false);
+
             if (degree < minDeg) {
                 minDeg = degree;
                 startVertex = nodeId;
             }
+
         }
 
         this.updateDegree(subQEGNodes, startVertex, vDegree, visited, k);
@@ -163,7 +159,15 @@ public class QEG {
             if (!visited.get(nodeId)) {
                 updateDegree(subQEGNodes, nodeId, vDegree, visited, k);
             }
+
+            /*
+            if((nodeId==1414)||((nodeId>=1979)&&(nodeId<=1984)))
+            {
+                System.out.println("inside max core: "+nodeId+" :: "+vDegree.get(nodeId));
+            }
+             */
         }
+        //System.exit(0);
 
         for (int nodeId : subQEGNodes) {
             if (vDegree.get(nodeId) >= k) {
@@ -194,6 +198,7 @@ public class QEG {
         visited.put(nodeId, true);
 
         Node vertex = idNodeMap.get(nodeId);
+
         for (int adjId : vertex.adjList) {
             //if vertex has degree smaller than k, adjacent vertices will be affected
             if (vDegree.get(nodeId) < k) {
@@ -218,13 +223,35 @@ public class QEG {
         if (nodeId == Constants.INVALID_INT) {
             System.err.println("Invalid input in QEG.updateDegree()");
         }
+        
         visited.put(nodeId, true);
 
         Node vertex = idNodeMap.get(nodeId);
         Set<Integer> adj = new LinkedHashSet<Integer>(vertex.adjList);
         adj.retainAll(subQEGNodes);
 
+        if ((nodeId == 1414) || ((nodeId >= 1979) && (nodeId <= 1984))) {
+            System.out.println("visiting: " + nodeId + " :deg: " + vDegree.get(nodeId));
+
+            System.out.println("DBG: degrees->");
+            System.out.println("1414: " + vDegree.get(1414));
+            for (int tmp = 1979; tmp <= 1984; tmp++) {
+                System.out.println(tmp + ": " + vDegree.get(tmp));
+            }
+            System.out.println("---");
+        }
+
         for (int adjId : adj) {
+            if ((nodeId == 1414) || ((nodeId >= 1979) && (nodeId <= 1984))) {
+                System.out.println("visiting: " + nodeId + " :adj: " + adjId);
+
+                System.out.println("DBG: degrees->");
+                System.out.println("1414: " + vDegree.get(1414));
+                for (int tmp = 1979; tmp <= 1984; tmp++) {
+                    System.out.println(tmp + ": " + vDegree.get(tmp));
+                }
+                System.out.println("---");
+            }
             //if vertex has degree smaller than k, adjacent vertices will be affected
             if (vDegree.get(nodeId) < k) {
                 int prevDeg = vDegree.get(adjId);
@@ -233,10 +260,23 @@ public class QEG {
 
             Boolean isVisited = visited.get(adjId);
             if (!isVisited) {
+                Boolean initLessThanK = false;
+                if(vDegree.get(adjId)<k) initLessThanK=true;
                 //if after processing, adjacent vertices' degree is less than k, the cureent vertex will be affected
-                if (updateDegree(adjId, vDegree, visited, k)) {
+                if (updateDegree(subQEGNodes, adjId, vDegree, visited, k) && !initLessThanK) {
                     int prevDeg = vDegree.get(nodeId);
                     vDegree.put(nodeId, prevDeg - 1);
+
+                    if ((nodeId == 1414) || ((nodeId >= 1979) && (nodeId <= 1984))) {
+                        System.out.println("Child of: " + nodeId + " :: " + adjId);
+
+                        System.out.println("DBG: degrees->");
+                        System.out.println("1414: " + vDegree.get(1414));
+                        for (int tmp = 1979; tmp <= 1984; tmp++) {
+                            System.out.println(tmp + ": " + vDegree.get(tmp));
+                        }
+                        System.out.println("---");
+                    }
                 }
             }
         }
@@ -246,11 +286,13 @@ public class QEG {
 
     public void printSubgraph(Set<Integer> vertices) {
         for (int nodeId : vertices) {
-            String nodeStr = "[" + nodeId + "]->";
             if (!idNodeMap.containsKey(nodeId)) {
                 System.err.println("Error inside QEG.printSubgraph(): Vertex not in QEG");
             }
             Node vertex = idNodeMap.get(nodeId);
+
+            String nodeStr = "[" + nodeId + ":" + vertex.score + "]->";
+
             Set<Integer> temp = new HashSet<Integer>(vertex.adjList);
             temp.retainAll(vertices);
             nodeStr += temp;

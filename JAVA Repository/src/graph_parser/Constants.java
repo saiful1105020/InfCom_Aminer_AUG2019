@@ -24,5 +24,5 @@ public class Constants {
     
     public static final int INVALID_INT = Integer.MIN_VALUE;
     
-    public static double BETA = 0.85;
+    public static double BETA = 0.025;
 }

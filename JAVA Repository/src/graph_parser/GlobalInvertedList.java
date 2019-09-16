@@ -29,21 +29,30 @@ public class GlobalInvertedList {
 
     public static Set<Integer>[] IL = new LinkedHashSet[Constants.NUM_KEYWORDS+1];
 
-    public static CitationStat[] citationStats = new CitationStat[Constants.NUM_KEYWORDS+1];
+    //public static CitationStat[] citationStats = new CitationStat[Constants.NUM_KEYWORDS];
     public static String fileName = "invertedList.txt";
 
     public static void compute() {
-        for (int i = 0; i < Constants.NUM_KEYWORDS; i++) {
+        System.out.println("Computing inverted list");
+        for (int i = 1; i <= Constants.NUM_KEYWORDS; i++) {
+            System.out.println("Keyword: "+i);
+            
             ArrayList<Integer> keywordAuthors = new ArrayList<Integer>();
             for (int j = Constants.MIN_AUTH_ID; j <= Constants.MAX_AUTH_ID; j++) {
                 if (Main.authors[j].getKeywordCitationCount(i) > 0) {
                     keywordAuthors.add(j);
                 }
             }
-            //invertedList[i] = keywordAuthors;
+            
             IL[i] = new LinkedHashSet<Integer>(keywordAuthors);
-            citationStats[i] = new CitationStat(i);
-            //System.out.println(i+": "+invertedList[i].toString());
+            CitationStat stat = new CitationStat(i);
+            
+            for (int j:IL[i]) {
+                int citations = (int) (long) Main.authors[j].getKeywordCitationCount(i);
+                double score = stat.citationPercentile.get(citations);
+                Main.authors[j].setKeywordScore(i, score);
+            }
+
         }
 
         storeIntoFile();
@@ -67,7 +76,7 @@ public class GlobalInvertedList {
                 }
                 //invertedList[i] = keywordAuthors;
                 IL[keywordId] = new LinkedHashSet<Integer>(keywordAuthors);
-                citationStats[keywordId] = new CitationStat(keywordId);
+                
                 /*
                 if (keywordId == 2) {
                     System.out.println(keywordId);
@@ -88,7 +97,7 @@ public class GlobalInvertedList {
     public static void storeIntoFile() {
         try {
             FileWriter fw = new FileWriter(new File(fileName));
-            for (int i = 0; i < Constants.NUM_KEYWORDS; i++) {
+            for (int i = 1; i <= Constants.NUM_KEYWORDS; i++) {
                 JSONObject jo = new JSONObject();
                 jo.put("keyword", i);
                 jo.put("total-authors", IL[i].size());

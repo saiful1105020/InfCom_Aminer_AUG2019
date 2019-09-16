@@ -20,7 +20,7 @@ public class Node {
 
     public Node(int id, KICQ kicq) {
         this.id = id;
-        this.adjList = Main.authors[id].getCoAuthorPaperCounts().keySet();
+        this.adjList = new LinkedHashSet<Integer>(Main.authors[id].getCoAuthorPaperCounts().keySet());
         this.score = 0.0;
 
         int n = kicq.keywords.length;

@@ -26,8 +26,9 @@ import org.json.simple.parser.*;
  */
 public class Main {
 
-    public static ArrayList<Article> articles = new ArrayList<Article>();
+    //public static ArrayList<Article> articles = new ArrayList<Article>();
     public static Author authors[] = new Author[Constants.MAX_AUTH_ID + 1];
+    public static int numArticles = 0;
 
     /**
      * @param args the command line arguments
@@ -78,24 +79,6 @@ public class Main {
                 }
             }
 
-            articles.add(article);
-        }
-    }
-
-    public static void loadGraph() {
-        File folder = new File(Constants.INPUT_DIR);
-        readAllFiles(folder);
-
-        for (int i = 0; i <= Constants.MAX_AUTH_ID; i++) {
-            authors[i] = new Author(i);
-        }
-        System.out.println("Number of articles read: " + articles.size());
-
-        for (int i = 0; i < articles.size(); i++) {
-            if (i % 5000 == 0) {
-                System.out.println("Processing article " + i);
-            }
-            Article article = articles.get(i);
             ArrayList<Integer> articleAuthors = article.getAuthors();
             ArrayList<Integer> articleKeywords = article.getKeywords();
 
@@ -114,7 +97,20 @@ public class Main {
                     articleAuthor.addKeywordCount(keywordId, article.getCitations());
                 }
             }
+            numArticles++;
         }
+    }
+
+    public static void loadGraph() {
+        File folder = new File(Constants.INPUT_DIR);
+        
+        for (int i = 0; i <= Constants.MAX_AUTH_ID; i++) {
+            authors[i] = new Author(i);
+        }
+        
+        readAllFiles(folder);
+        
+        System.out.println("Number of articles read: " + numArticles);
 
         System.out.println(authors[1].toJSON().toString());
         //System.out.println(authors[1]);
@@ -166,8 +162,10 @@ public class Main {
         }
 
         //System.out.println(authors[1].toJSON().toString());
+        
         System.out.println("Number of nodes: "+totalNodes);
         System.out.println("Number of edges: "+totalDegree/2);
+        
     }
 
     public static void main(String[] args) {
@@ -183,7 +181,6 @@ public class Main {
             try {
                 fw = new FileWriter(new File("Graph.txt"));
                 for (int i = Constants.MIN_AUTH_ID; i <= Constants.MAX_AUTH_ID; i++) {
-                    authors[i].assignScore();
                     fw.write(authors[i].toJSON().toJSONString());
                     fw.write("\n");
                     fw.flush();
@@ -228,6 +225,7 @@ public class Main {
          */
         int n = 0;
         ArrayList<String> queryTerms = new ArrayList<String>();
+        /*
         System.out.println("Number of terms: ");
 
         try {
@@ -241,19 +239,27 @@ public class Main {
             queryTerms.add(input.nextLine());
             System.out.println(queryTerms.get(i));
         }
-        Query query = new Query(queryTerms, Constants.AND_PREDICATE);
+        */
+        queryTerms.add("machine learning");
+        queryTerms.add("information retrieval");
+        int queryType = Constants.OR_PREDICATE;
+        
+        Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);
 
         //System.out.println(augmentedQuery);
         int runs = 1;
-        long startTime = System.nanoTime();
+        long startTime,endTime,totalTime;
+        
+        startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
         {
             PruneAndExplore solve = new PruneAndExplore(augmentedQuery);
         }
-        long endTime = System.nanoTime();
-        long totalTime = (endTime - startTime)/(1000000);
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime)/(1000000);
         System.out.println("PRUNE: "+totalTime+" ms");
+        
         
         startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
@@ -263,6 +269,7 @@ public class Main {
         endTime = System.nanoTime();
         totalTime = (endTime - startTime)/(1000000);
         System.out.println("BASIC: "+totalTime+" ms");
+        
     }
 
 }

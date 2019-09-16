@@ -15,18 +15,22 @@ import java.util.Set;
 public class Community {
     private Set<Integer> vSet;
     private double score;
+    private int k;
 
     public Community() {
         vSet = new LinkedHashSet<Integer>();
         score=0.0;
+        k=0;
     }
 
     
-    public Community(Set<Integer> vSet, double score) {
+    public Community(Set<Integer> vSet, double score, int k) {
         this.vSet = vSet;
         this.score = score;
+        this.k = k;
     }
 
+    
     public double getScore() {
         return score;
     }
@@ -47,6 +51,14 @@ public class Community {
     public boolean equals(Object obj) {
         Community c = (Community) obj;
         return this.vSet.equals(c.vSet);
+    }
+
+    public int getK() {
+        return k;
+    }
+
+    public void setK(int k) {
+        this.k = k;
     }
     
     

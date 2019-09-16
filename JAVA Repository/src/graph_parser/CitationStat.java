@@ -56,7 +56,6 @@ public class CitationStat {
 
     
     public void calculateStats() {
-        
         for (Integer authorId : GlobalInvertedList.IL[keywordId]) {
             allCitations.add((int) Main.authors[authorId].getKeywordCitationCount(keywordId));
         }
