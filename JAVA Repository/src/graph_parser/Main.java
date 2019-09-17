@@ -219,15 +219,15 @@ public class Main {
             System.out.println(queryTerms.get(i));
         }
         */
-        queryTerms.add("machine learning");
-        queryTerms.add("information retrieval");
-        int queryType = Constants.OR_PREDICATE;
+        queryTerms.add("database");
+        queryTerms.add("data mining");
+        int queryType = Constants.AND_PREDICATE;
         
         Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);
 
         //System.out.println(augmentedQuery);
-        int runs = 1;
+        int runs = Constants.RUNS;
         long startTime,endTime,totalTime;
         
         startTime = System.nanoTime();

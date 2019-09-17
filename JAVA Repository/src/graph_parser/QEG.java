@@ -22,6 +22,8 @@ public class QEG {
 
     Set<Integer> V = new HashSet<Integer>();
     HashMap<Integer, Node> idNodeMap = new HashMap<Integer, Node>();
+    HashMap<Integer, Integer> vertexDegree = new HashMap<Integer, Integer>();
+            
     int maxDegree = 0;
 
     public QEG(KICQ kicq) {
@@ -59,6 +61,8 @@ public class QEG {
             //System.out.println(node);
         }
 
+        this.coreDecomposition();
+        
         if (Constants.SHOW_OUTPUT) {
             System.out.println("Max Degree: " + maxDegree);
             System.out.println("Total Nodes: " + this.V.size());
@@ -111,14 +115,126 @@ public class QEG {
 
     }
 
+    public void coreDecomposition(){
+        /*
+        Also remove zero-degree nodes
+        */
+        int dMax = this.maxDegree;
+        
+        //count[i]: how many vertices of degree i
+        int count[] = new int[dMax+1];
+        
+        //temp variable for assigning index of D table
+        int currPos[] = new int[dMax+1];
+        
+        //b[i]: where is (in D) the first vertex with degree i
+        int b[] = new int[dMax+1];
+        
+        //System.out.println("Size of V: "+V.size());
+        
+        //init
+        for(int i=0;i<=dMax;i++)
+        {
+            count[i]=0;
+            currPos[i]=0;
+        }
+        
+        Set<Integer> zeroDegreeNodes = new LinkedHashSet<>();
+        
+        for(int nodeId:this.V)
+        {
+            int deg = idNodeMap.get(nodeId).adjList.size();
+            if(deg==0)
+            {
+                zeroDegreeNodes.add(nodeId);
+            }
+            else
+            {
+                count[deg]++;
+                vertexDegree.put(nodeId, deg);
+            }
+        }
+        
+        //remove nodes with degree 0
+        this.V.removeAll(zeroDegreeNodes);
+        //System.out.println("Size of V after removal: "+V.size());
+        
+        b[1]=0;
+        currPos[1]=0;
+        for(int i=2;i<=dMax;i++)
+        {
+            b[i]=b[i-1]+count[i-1];
+            currPos[i]=b[i];
+            //System.out.println("Deg "+i+" starts from "+b[i]);
+        }
+        
+        //List of nodes sorted by degree
+        int D[] = new int[V.size()];
+        //p[i]: where is node i in D? 
+        int p[] = new int[Constants.MAX_AUTH_ID+1];
+        
+        for(int nodeId:this.V)
+        {
+            int deg = vertexDegree.get(nodeId);
+            D[currPos[deg]]=nodeId;
+            p[nodeId] = currPos[deg];
+            currPos[deg]++;
+        }
+        
+        for(int i=0;i<D.length;i++)
+        {
+            int vId = D[i];
+            Node node = idNodeMap.get(vId);
+            node.adjList.retainAll(V);
+            
+            for(int uId:node.adjList)
+            {
+                int du = vertexDegree.get(uId);
+                int dv = vertexDegree.get(vId);
+                if(du>dv)
+                {
+                    int pu = p[uId];
+                    int pw = b[du];
+                    int w = D[pw];
+                    
+                    if(uId!=w)
+                    {
+                        D[pu] = w;
+                        D[pw] = uId;
+                        p[uId] = pw;
+                        p[w] = pu;
+                    }
+                    b[du]++;
+                    du--;
+                    vertexDegree.put(uId, du);
+                }
+                
+            }
+        }
+    }
+    
+    public Set<Integer> findMaxCore(Set<Integer> subQEGNodes, int k)
+    {
+        Set<Integer> Vk = new LinkedHashSet<Integer>();
+        
+        for(int nodeId:subQEGNodes)
+        {
+            if(vertexDegree.get(nodeId)>=k)
+            {
+                Vk.add(nodeId);
+            }
+        }
+        
+        return Vk;
+    }
+    
     /**
      * Needs to be implemented again
-     *
      * @param subQEGNodes
      * @param k
      * @return
      */
-    public Set<Integer> findMaxCore(Set<Integer> subQEGNodes, int k) {
+    public Set<Integer> findMaxCoreOld(Set<Integer> subQEGNodes, int k) {
         Set<Integer> Vk = new LinkedHashSet<Integer>();
 
         int minDeg = Integer.MAX_VALUE;

@@ -72,21 +72,15 @@ public class PruneAndExplore {
         int minDegree = Integer.MAX_VALUE;
         int maxDegree = Integer.MIN_VALUE;
         for (int vId : H) {
-            Node node = qeg.idNodeMap.get(vId);
-
-            Set<Integer> subgraphAdjacent = new LinkedHashSet<Integer>(node.adjList);
-            subgraphAdjacent.retainAll(H);
-
-            int deg = subgraphAdjacent.size();
-
-            if (deg < minDegree) {
-                minDegree = deg;
-            }
-
-            if (deg > maxDegree) {
+            int deg = qeg.vertexDegree.get(vId);
+            if(deg>maxDegree)
+            {
                 maxDegree = deg;
             }
-
+            if(deg<minDegree)
+            {
+                minDegree = deg;
+            }
         }
 
         if (minDegree > k) {
