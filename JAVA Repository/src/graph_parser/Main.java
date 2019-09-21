@@ -29,6 +29,7 @@ public class Main {
     //public static ArrayList<Article> articles = new ArrayList<Article>();
     public static Author authors[] = new Author[Constants.MAX_AUTH_ID + 1];
     public static int numArticles = 0;
+    public static int maxDegree = 0;
 
     /**
      * @param args the command line arguments
@@ -101,13 +102,13 @@ public class Main {
 
     public static void loadGraph() {
         File folder = new File(Constants.INPUT_DIR);
-        
+
         for (int i = 0; i <= Constants.MAX_AUTH_ID; i++) {
             authors[i] = new Author(i);
         }
-        
+
         readAllFiles(folder);
-        
+
         System.out.println("Number of articles read: " + numArticles);
 
         //System.out.println(authors[1].toJSON().toString());
@@ -115,9 +116,9 @@ public class Main {
     }
 
     public static void readGraph() {
-        long totalDegree=0;
-        long totalNodes=0;
-        
+        long totalDegree = 0;
+        long totalNodes = 0;
+
         try {
             //read from Graph.txt
             Scanner input = new Scanner(new File("Graph.txt"));
@@ -128,10 +129,14 @@ public class Main {
 
                 Author author = new Author(authorId);
                 JSONArray jCoAuths = (JSONArray) jo.get("co-authors");
-                
-                totalDegree+=jCoAuths.size();
+
+                int degree = jCoAuths.size();
+                if (degree > Main.maxDegree) {
+                    Main.maxDegree = degree;
+                }
+                totalDegree += degree;
                 totalNodes++;
-                
+
                 for (int i = 0; i < jCoAuths.size(); i++) {
                     JSONObject jCoAuth = (JSONObject) jCoAuths.get(i);
                     int coAuthorId = (int) ((long) jCoAuth.get("coauth-id"));
@@ -160,10 +165,9 @@ public class Main {
         }
 
         //System.out.println(authors[1].toJSON().toString());
-        
-        System.out.println("Number of nodes: "+totalNodes);
-        System.out.println("Number of edges: "+totalDegree/2);
-        
+        System.out.println("Number of nodes: " + totalNodes);
+        System.out.println("Number of edges: " + totalDegree / 2);
+
     }
 
     public static void main(String[] args) {
@@ -179,6 +183,12 @@ public class Main {
             try {
                 fw = new FileWriter(new File("Graph.txt"));
                 for (int i = Constants.MIN_AUTH_ID; i <= Constants.MAX_AUTH_ID; i++) {
+
+                    int degree = authors[i].getCoAuthorPaperCounts().keySet().size();
+                    if (degree > Main.maxDegree) {
+                        Main.maxDegree = degree;
+                    }
+
                     fw.write(authors[i].toJSON().toJSONString());
                     fw.write("\n");
                     fw.flush();
@@ -200,7 +210,6 @@ public class Main {
             GlobalInvertedList.loadFromFile();
         }
 
-        
         //Scanner input = new Scanner(System.in);
         int n = 0;
         ArrayList<String> queryTerms = new ArrayList<String>();
@@ -218,17 +227,22 @@ public class Main {
             queryTerms.add(input.nextLine());
             System.out.println(queryTerms.get(i));
         }
-        */
+         */
+
+        long startTime, endTime, totalTime;
+
+        /*
         queryTerms.add("database");
         queryTerms.add("data mining");
         int queryType = Constants.AND_PREDICATE;
         
         Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);
-
+         */
+        /*
         //System.out.println(augmentedQuery);
         int runs = Constants.RUNS;
-        long startTime,endTime,totalTime;
+        
         
         startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
@@ -247,7 +261,13 @@ public class Main {
         endTime = System.nanoTime();
         totalTime = (endTime - startTime)/(1000000);
         System.out.println("BASIC: "+((double)totalTime)/runs+" ms");
-        
+         */
+        startTime = System.nanoTime();
+        CLTree.buildTree();
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("CL-tree without iList: " + totalTime + " ms");
+        //CLTree.traverseTree(CLTree.root);
     }
 
 }
