@@ -44,5 +44,8 @@ public class iListElement {
         this.maxOutScore = maxOutScore;
     }
     
-    
+    public void addRelVertex(int vId)
+    {
+        this.relVertices.add(vId);
+    }
 }

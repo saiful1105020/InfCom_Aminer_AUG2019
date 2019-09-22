@@ -26,6 +26,24 @@ public class Author {
         this.id = id;
     }
 
+    public HashMap<Integer, CountPair> getKeywordCounts() {
+        return keywordCounts;
+    }
+
+    public void setKeywordCounts(HashMap<Integer, CountPair> keywordCounts) {
+        this.keywordCounts = keywordCounts;
+    }
+
+    public HashMap<Integer, Double> getKeywordScore() {
+        return keywordScore;
+    }
+
+    public void setKeywordScore(HashMap<Integer, Double> keywordScore) {
+        this.keywordScore = keywordScore;
+    }
+
+    
+    
     public int getId() {
         return id;
     }
