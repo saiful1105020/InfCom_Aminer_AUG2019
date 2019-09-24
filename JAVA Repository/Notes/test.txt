@@ -1,0 +1,2 @@
+svn status -q | find /c /v "Graph.txt"
+pause

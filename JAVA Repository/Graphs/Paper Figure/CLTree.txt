@@ -1,0 +1,66 @@
+run:
+Number of nodes: 20
+Number of edges: 36
+Visiting children. Parent node k value = 0
+Visiting children. Parent node k value = 1
+Visiting children. Parent node k value = 2
+Visiting children. Parent node k value = 3
+k: 3, vertices: [4, 3, 6, 7, 8]
+keywords: [1, 2, 3]
+----
+1->[4, 3, 8]
+MaxInScore: 1.0999999999999999
+MaxOutScore: 0.0
+2->[4, 3, 6, 7, 8]
+MaxInScore: 1.5999999999999999
+MaxOutScore: 0.0
+3->[4, 8]
+MaxInScore: 0.4
+MaxOutScore: 0.0
+-------
+
+Visiting children. Parent node k value = 3
+k: 3, vertices: [10, 11, 12, 14, 20, 16, 17, 18, 19, 13, 15]
+keywords: [1, 2, 3]
+----
+1->[17]
+MaxInScore: 0.7
+MaxOutScore: 0.0
+2->[18, 19]
+MaxInScore: 1.5
+MaxOutScore: 0.0
+3->[10, 11, 12, 14, 20, 16, 13, 15]
+MaxInScore: 4.5
+MaxOutScore: 0.0
+-------
+
+k: 2, vertices: [1, 2, 9]
+keywords: [1, 2, 3]
+----
+1->[1, 2]
+MaxInScore: 3.4000000000000004
+MaxOutScore: 1.0999999999999999
+2->[1, 2]
+MaxInScore: 4.7
+MaxOutScore: 1.5999999999999999
+3->[9]
+MaxInScore: 5.4
+MaxOutScore: 4.5
+-------
+
+k: 1, vertices: [5]
+keywords: [1, 2, 3]
+----
+1->[]
+MaxInScore: 0.0
+MaxOutScore: 3.4000000000000004
+2->[]
+MaxInScore: 0.0
+MaxOutScore: 4.7
+3->[5]
+MaxInScore: 5.800000000000001
+MaxOutScore: 5.4
+-------
+
+CL-tree without iList: 6 ms
+BUILD SUCCESSFUL (total time: 0 seconds)

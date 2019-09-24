@@ -1,0 +1,60 @@
+run:
+Number of nodes: 10
+Number of edges: 14
+Visiting children. Parent node k value = 0
+Visiting children. Parent node k value = 1
+Visiting children. Parent node k value = 2
+Visiting children. Parent node k value = 3
+k: 3, vertices: [4, 3, 6, 7, 8]
+keywords: [1, 2, 3]
+----
+1->[4, 3, 8]
+MaxInScore: 1.0999999999999999
+MaxOutScore: 0.0
+2->[4, 3, 6, 7, 8]
+MaxInScore: 1.5999999999999999
+MaxOutScore: 0.0
+3->[4, 8]
+MaxInScore: 0.4
+MaxOutScore: 0.0
+-------
+
+k: 2, vertices: [1, 2]
+keywords: [1, 2, 3]
+----
+1->[1, 2]
+MaxInScore: 2.7
+MaxOutScore: 1.0999999999999999
+2->[1, 2]
+MaxInScore: 3.2
+MaxOutScore: 1.5999999999999999
+3->[]
+MaxInScore: 0.0
+MaxOutScore: 0.4
+-------
+
+k: 1, vertices: [9]
+keywords: [1, 2, 3]
+----
+1->[]
+MaxInScore: 0.0
+MaxOutScore: 2.7
+2->[]
+MaxInScore: 0.0
+MaxOutScore: 3.2
+3->[9]
+MaxInScore: 0.9
+MaxOutScore: 0.4
+-------
+
+Visiting children. Parent node k value = 1
+k: 1, vertices: [5, 10]
+keywords: [3]
+----
+3->[5, 10]
+MaxInScore: 1.2000000000000002
+MaxOutScore: 0.0
+-------
+
+CL-tree without iList: 11 ms
+BUILD SUCCESSFUL (total time: 0 seconds)

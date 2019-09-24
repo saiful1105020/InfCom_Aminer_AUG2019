@@ -31,7 +31,7 @@ public class TreeNode {
         //constructor for root node
         this.cohesionFactor = 0;
         this.parent = null;
-        
+
         for (int i = Constants.MIN_AUTH_ID; i <= Constants.MAX_AUTH_ID; i++) {
             this.vertexSet.add(i);
         }
@@ -46,24 +46,50 @@ public class TreeNode {
         this.parent = parent;
     }
 
-    public void compressVertices(TreeNode parent)
-    {
-        //pre-order
-        for(TreeNode child:parent.childNodes)
-        {
-            //compress node vertices
-            parent.vertexSet.removeAll(child.vertexSet);
-            
-            //compress inverted list
-            for(int keyword:parent.iList.keySet())
-            {
-                parent.iList.get(keyword).getRelVertices().removeAll(child.vertexSet);
+    public void compressVertices(TreeNode parent) {
+        /**
+         * Assign maxOutScore for each keyword: only requires the scores of vertices in child nodes
+         */
+        for (int keyword : parent.iList.keySet()) {
+            double maxOutScore = 0.0;
+            for (TreeNode child : parent.childNodes) {
+                double outScore = 0.0;
+                if (child.iList.containsKey(keyword)) {
+                    for (int vid : child.iList.get(keyword).getRelVertices()) {
+                        outScore += Main.authors[vid].getKeywordScore(keyword);
+                    }
+                }
+
+                if (outScore > maxOutScore) {
+                    maxOutScore = outScore;
+                }
             }
             
+            parent.iList.get(keyword).setMaxOutScore(maxOutScore);
+        }
+
+        /**
+         * First, compress node vertices, then relVertices in iList
+         * if relVertices is empty, maxInScore will be zero
+         */
+        for (TreeNode child : parent.childNodes) {
+            //compress node vertices
+            parent.vertexSet.removeAll(child.vertexSet);
+
+            //compress inverted list
+            for (int keyword : parent.iList.keySet()) {
+                Set<Integer> relVertices = parent.iList.get(keyword).getRelVertices();
+                relVertices.removeAll(child.vertexSet);
+                if (relVertices.size() == 0) {
+                    //maxInScore is set to 0
+                    parent.iList.get(keyword).setMaxInScore(0.0);
+                }
+            }
+
             compressVertices(child);
         }
     }
-    
+
     public void attachChildNodes() {
         Set<Integer> vSet = CLTree.findMaxCore(this.vertexSet, this.cohesionFactor + 1);
         if (vSet.size() != 0) {
@@ -71,35 +97,41 @@ public class TreeNode {
                 TreeNode tnode = new TreeNode(this);
                 tnode.setCohesionFactor(tnode.getParent().getCohesionFactor() + 1);
                 tnode.vertexSet = componentNodes;
-                
+
                 /**
                  * Form iList
                  */
                 Map<Integer, iListElement> tempIList = new HashMap<>();
-                for(int v:tnode.vertexSet)
-                {
-                    for(int keyword:Main.authors[v].getKeywordCounts().keySet())
-                    {
-                        if(Main.authors[v].getKeywordCitationCount(keyword)==0)
-                        {
+                for (int v : tnode.vertexSet) {
+                    for (int keyword : Main.authors[v].getKeywordCounts().keySet()) {
+                        if (Main.authors[v].getKeywordCitationCount(keyword) == 0) {
                             continue;
                         }
-                        if(tempIList.containsKey(keyword))
-                        {
+                        if (tempIList.containsKey(keyword)) {
                             tempIList.get(keyword).addRelVertex(v);
-                        }
-                        else
-                        {
+                        } else {
                             iListElement newElement = new iListElement();
                             newElement.addRelVertex(v);
                             tempIList.put(keyword, newElement);
                         }
                     }
                 }
-                
+
+                /**
+                 * Assign maxInScore, zero values are updated later
+                 */
+                for (int keyword : tempIList.keySet()) {
+                    iListElement tempEl = tempIList.get(keyword);
+                    double maxInScore = 0.0;
+                    for (int vid : tempEl.getRelVertices()) {
+                        maxInScore += Main.authors[vid].getKeywordScore(keyword);
+                    }
+                    tempEl.setMaxInScore(maxInScore);
+                }
+
                 tnode.iList = tempIList;
                 tnode.attachChildNodes();
-                
+
                 this.childNodes.add(tnode);
             }
         }
@@ -123,17 +155,16 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        String str="";
-        str+="k: "+this.cohesionFactor+", vertices: "+this.vertexSet+"\n";
-        str+="keywords: "+this.iList.keySet()+"\n----\n";
-        for(int keyword:this.iList.keySet())
-        {
-            str+=keyword+"->"+this.iList.get(keyword).getRelVertices()+"\n";
+        String str = "";
+        str += "k: " + this.cohesionFactor + ", vertices: " + this.vertexSet + "\n";
+        str += "keywords: " + this.iList.keySet() + "\n----\n";
+        for (int keyword : this.iList.keySet()) {
+            str += keyword + "->" + this.iList.get(keyword).getRelVertices() + "\n";
+            str += "MaxInScore: "+this.iList.get(keyword).getMaxInScore()+"\n";
+            str += "MaxOutScore: "+this.iList.get(keyword).getMaxOutScore()+"\n";
         }
-        str+="-------\n";
+        str += "-------\n";
         return str; //To change body of generated methods, choose Tools | Templates.
     }
-    
-    
 
 }

@@ -266,7 +266,7 @@ public class Main {
         CLTree.buildTree();
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
-        System.out.println("CL-tree without iList: " + totalTime + " ms");
+        System.out.println("CL-tree with iList: " + totalTime + " ms");
         //CLTree.traverseTree(CLTree.root);
     }
 

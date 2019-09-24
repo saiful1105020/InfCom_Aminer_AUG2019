@@ -24,7 +24,7 @@ public class CLTree {
     public static void buildTree() {
         coreDecomposition();
         root = new TreeNode();
-        traverseTree(root);
+        //traverseTree(root);
     }
 
     public static void traverseTree(TreeNode tnode)
