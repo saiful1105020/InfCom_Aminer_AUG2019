@@ -238,7 +238,7 @@ public class Main {
         
         Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);
-         */
+        */ 
         /*
         //System.out.println(augmentedQuery);
         int runs = Constants.RUNS;
@@ -269,5 +269,4 @@ public class Main {
         System.out.println("CL-tree with iList: " + totalTime + " ms");
         //CLTree.traverseTree(CLTree.root);
     }
-
 }

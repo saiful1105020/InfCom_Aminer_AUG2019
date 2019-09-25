@@ -10,15 +10,16 @@ package graph_parser;
  * @author MSI
  */
 public class Constants {
-    public static final String INPUT_DIR = "../Dataset_Preprocessed/smallest";
+    public static final String INPUT_DIR = "../Dataset_Preprocessed/small_dataset";
     public static final int MIN_AUTH_ID = 1;
     public static final int MAX_AUTH_ID = 200;
-    public static final int NUM_KEYWORDS = 200;
+    public static final int NUM_KEYWORDS = 100;
     public static final double MATCHING_THRESHOLD = 0.20;
     
     public static boolean LOAD_GRAPH = false;
+    public static boolean COMPUTE_CL_TREE = false;
     public static boolean SHOW_OUTPUT = true;
-    public static boolean DEBUG_MODE = true;
+    public static boolean DEBUG_MODE = false;
     public static int RUNS = 1;
     
     public static final int AND_PREDICATE = 1;

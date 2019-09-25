@@ -7,9 +7,12 @@ package graph_parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -17,8 +20,12 @@ import java.util.Set;
  */
 public class TreeNode {
 
+    public static int treeNodeIdCounter = 0;
+    
     private int cohesionFactor;
+    private int kMax;
     private TreeNode parent;
+    private int treeNodeId;
 
     //computed first, updated later from child
     Set<Integer> vertexSet = new LinkedHashSet<>();
@@ -31,21 +38,39 @@ public class TreeNode {
         //constructor for root node
         this.cohesionFactor = 0;
         this.parent = null;
+        this.treeNodeId = TreeNode.treeNodeIdCounter++;
 
         for (int i = Constants.MIN_AUTH_ID; i <= Constants.MAX_AUTH_ID; i++) {
             this.vertexSet.add(i);
         }
-
-        this.attachChildNodes();
-        this.compressVertices(this);
-
+    }
+    
+    public TreeNode(int nodeId)
+    {
+        this.treeNodeId = nodeId;
+        this.parent = null;
     }
 
     public TreeNode(TreeNode parent) {
         //constructor for other nodes
         this.parent = parent;
     }
+    
+    public void attach()
+    {
+        this.attachChildNodes();
+        this.compressVertices(this);
+    }
 
+    public int getkMax() {
+        return kMax;
+    }
+
+    public void setkMax(int kMax) {
+        this.kMax = kMax;
+    }
+    
+    
     public void compressVertices(TreeNode parent) {
         /**
          * Assign maxOutScore for each keyword: only requires the scores of vertices in child nodes
@@ -97,7 +122,7 @@ public class TreeNode {
                 TreeNode tnode = new TreeNode(this);
                 tnode.setCohesionFactor(tnode.getParent().getCohesionFactor() + 1);
                 tnode.vertexSet = componentNodes;
-
+                tnode.setkMax(tnode.getCohesionFactor());
                 /**
                  * Form iList
                  */
@@ -129,10 +154,15 @@ public class TreeNode {
                     tempEl.setMaxInScore(maxInScore);
                 }
 
+                tnode.treeNodeId = TreeNode.treeNodeIdCounter++;
                 tnode.iList = tempIList;
                 tnode.attachChildNodes();
 
                 this.childNodes.add(tnode);
+                if(this.kMax<tnode.kMax)
+                {
+                    this.kMax = tnode.kMax;
+                }
             }
         }
     }
@@ -155,8 +185,8 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        String str = "";
-        str += "k: " + this.cohesionFactor + ", vertices: " + this.vertexSet + "\n";
+        String str = "ID: "+this.treeNodeId+"\n";
+        str += "k: " + this.cohesionFactor+ ", k_max: " + this.kMax + ", vertices: " + this.vertexSet + "\n";
         str += "keywords: " + this.iList.keySet() + "\n----\n";
         for (int keyword : this.iList.keySet()) {
             str += keyword + "->" + this.iList.get(keyword).getRelVertices() + "\n";
@@ -165,6 +195,38 @@ public class TreeNode {
         }
         str += "-------\n";
         return str; //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public JSONObject toJSON(){
+        JSONObject jo = new JSONObject();
+        jo.put("node-id", this.treeNodeId);
+        jo.put("cohesion-factor",this.cohesionFactor);
+        //Requires attention
+        jo.put("kmax", this.kMax);
+        jo.put("vertices", this.vertexSet);
+        
+        JSONArray ja = new JSONArray();
+        
+        for(int keywordId:iList.keySet())
+        {
+            Map m = new LinkedHashMap(4);
+            m.put("keyword-id",keywordId);
+            m.put("rel-vertices", iList.get(keywordId).getRelVertices());
+            m.put("max-in-score", iList.get(keywordId).getMaxInScore());
+            m.put("max-out-score", iList.get(keywordId).getMaxOutScore());
+            ja.add(m);
+        }
+        jo.put("keywords", ja);
+        
+        return jo;
+    }
+
+    public int getTreeNodeId() {
+        return treeNodeId;
+    }
+
+    public void setTreeNodeId(int treeNodeId) {
+        this.treeNodeId = treeNodeId;
     }
 
 }
