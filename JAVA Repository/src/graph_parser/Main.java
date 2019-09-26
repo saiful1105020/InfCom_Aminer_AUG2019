@@ -230,8 +230,9 @@ public class Main {
         */
 
         long startTime, endTime, totalTime;
+        int runs = Constants.RUNS;
 
-        /*
+        
         queryTerms.add("database");
         queryTerms.add("data mining");
         int queryType = Constants.OR_PREDICATE;
@@ -239,9 +240,9 @@ public class Main {
         Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);
          
-        int runs = Constants.RUNS;
         
         
+        /*
         startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
         {
@@ -260,11 +261,20 @@ public class Main {
         totalTime = (endTime - startTime)/(1000000);
         System.out.println("PRUNE: "+((double)totalTime)/runs+" ms");
         */
+        
         startTime = System.nanoTime();
         CLTree.buildTree();
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("CL-tree with iList: " + totalTime + " ms");
-        //CLTree.traverseTree(CLTree.root);
+        
+        startTime = System.nanoTime();
+        for(int run=0;run<runs;run++)
+        {
+            TreeExplore solve = new TreeExplore(augmentedQuery);
+        }
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime)/(1000000);
+        System.out.println("TREE: "+((double)totalTime)/runs+" ms");
     }
 }
