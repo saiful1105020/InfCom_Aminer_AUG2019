@@ -221,37 +221,26 @@ public class Main {
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-
+        
         for (int i = 0; i < n; i++) {
             System.out.println("Term " + i + " : ");
             queryTerms.add(input.nextLine());
             System.out.println(queryTerms.get(i));
         }
-         */
+        */
 
         long startTime, endTime, totalTime;
 
         /*
         queryTerms.add("database");
         queryTerms.add("data mining");
-        int queryType = Constants.AND_PREDICATE;
+        int queryType = Constants.OR_PREDICATE;
         
         Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);
-        */ 
-        /*
-        //System.out.println(augmentedQuery);
+         
         int runs = Constants.RUNS;
         
-        
-        startTime = System.nanoTime();
-        for(int run=0;run<runs;run++)
-        {
-            PruneAndExplore solve = new PruneAndExplore(augmentedQuery);
-        }
-        endTime = System.nanoTime();
-        totalTime = (endTime - startTime)/(1000000);
-        System.out.println("PRUNE: "+((double)totalTime)/runs+" ms");
         
         startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
@@ -261,7 +250,16 @@ public class Main {
         endTime = System.nanoTime();
         totalTime = (endTime - startTime)/(1000000);
         System.out.println("BASIC: "+((double)totalTime)/runs+" ms");
-         */
+        
+        startTime = System.nanoTime();
+        for(int run=0;run<runs;run++)
+        {
+            PruneAndExplore solve = new PruneAndExplore(augmentedQuery);
+        }
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime)/(1000000);
+        System.out.println("PRUNE: "+((double)totalTime)/runs+" ms");
+        */
         startTime = System.nanoTime();
         CLTree.buildTree();
         endTime = System.nanoTime();

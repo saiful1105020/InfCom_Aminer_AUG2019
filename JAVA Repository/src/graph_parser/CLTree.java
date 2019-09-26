@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
@@ -177,7 +178,7 @@ public class CLTree {
         for (int nodeId : vSet) {
             if (!visited.get(nodeId)) {
                 Set<Integer> C = new LinkedHashSet<>();
-                dfsVisit(C, nodeId, vSet, visited);
+                bfsVisit(C, nodeId, vSet, visited);
                 components.add(C);
             }
         }
@@ -198,6 +199,28 @@ public class CLTree {
             }
         }
 
+    }
+    
+    public static void bfsVisit(Set<Integer> connectedComponent, int nodeId, Set<Integer> vSet, HashMap<Integer, Boolean> visited) {
+        LinkedList<Integer> queue = new LinkedList<Integer>();
+        visited.put(nodeId, true);
+        queue.add(nodeId);
+
+        while (queue.size() != 0) {
+            nodeId = queue.poll();
+            connectedComponent.add(nodeId);
+            
+            Set<Integer> adj = new LinkedHashSet(Main.authors[nodeId].getCoAuthorPaperCounts().keySet());
+            adj.retainAll(vSet);
+            
+            for (int v : adj) {
+                if(visited.get(v)==false)
+                {
+                    visited.put(v, true);
+                    queue.add(v);
+                }
+            }
+        }
     }
 
     public static void coreDecomposition() {

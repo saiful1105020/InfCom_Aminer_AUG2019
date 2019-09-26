@@ -49,7 +49,7 @@ public class BasicExplore {
             for (int i = 0; i < KICQ.r; i++) {
                 Community c = this.Q.remove();
                 System.out.println("Top-" + (KICQ.r - i) + ": " + c.getK() + "-core");
-                this.qeg.printSubgraph(c.getvSet());
+                //this.qeg.printSubgraph(c.getvSet());
                 System.out.println("Score: " + c.getScore());
             }
         }
