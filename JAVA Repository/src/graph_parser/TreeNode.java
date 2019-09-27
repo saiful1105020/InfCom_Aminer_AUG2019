@@ -29,6 +29,8 @@ public class TreeNode {
 
     //computed first, updated later from child
     Set<Integer> vertexSet = new LinkedHashSet<>();
+    
+    Set<Integer> fullVertexSet = new LinkedHashSet<>();
 
     ArrayList<TreeNode> childNodes = new ArrayList<>();
 

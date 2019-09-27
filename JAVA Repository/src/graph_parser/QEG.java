@@ -80,6 +80,45 @@ public class QEG {
         }
 
     }
+    
+    public QEG(KICQ kicq, Set<Integer> vertexSet) {
+        int n;
+        n = kicq.keywords.length;
+
+        for (int i = 0; i < n; i++) {
+            Set<Integer> termVertices = new HashSet<Integer>();
+            for (int j = 0; j < kicq.keywords[i].size(); j++) {
+                int keywordId = kicq.keywords[i].get(j);
+                Set<Integer> keywordVertices = GlobalInvertedList.IL[keywordId];
+                termVertices.addAll(keywordVertices);
+                termVertices.retainAll(vertexSet);
+            }
+
+            if (kicq.predicate == Constants.OR_PREDICATE) {
+                this.V.addAll(termVertices);
+            } else {
+                if (i == 0) {
+                    this.V = new LinkedHashSet<Integer>(termVertices);
+                } else {
+                    this.V.retainAll(termVertices);
+                }
+            }
+        }
+
+        //System.out.println(this.V);
+        for (int nodeId : this.V) {
+            Node node = new Node(nodeId, kicq);
+            node.adjList.retainAll(this.V);
+            int deg = node.adjList.size();
+            if (deg > maxDegree) {
+                maxDegree = deg;
+            }
+            idNodeMap.put(nodeId, node);
+            //System.out.println(node);
+        }
+
+        this.coreDecomposition();
+    }
 
     public ArrayList<Set> findConnectedComponents(Set<Integer> vSet) {
         ArrayList<Set> components = new ArrayList<>();
@@ -144,6 +183,7 @@ public class QEG {
         Also remove zero-degree nodes
          */
         int dMax = this.maxDegree;
+        
 
         //count[i]: how many vertices of degree i
         int count[] = new int[dMax + 1];
@@ -176,6 +216,8 @@ public class QEG {
         //remove nodes with degree 0
         this.V.removeAll(zeroDegreeNodes);
         //System.out.println("Size of V after removal: "+V.size());
+        
+        if(dMax<1) return;
 
         b[1] = 0;
         currPos[1] = 0;
@@ -287,14 +329,14 @@ public class QEG {
 
     public double score(Set<Integer> vSet, int k) {
         double s = 0.0;
-        s += ((Constants.BETA * k) / maxDegree);
+        s += ((Constants.BETA * k) / Main.maxDegree);
 
         double sum = 0.0;
         for (int v : vSet) {
             Node node = idNodeMap.get(v);
             sum += node.score;
         }
-        s += ((1 - Constants.BETA) * (sum / this.V.size()));
+        s += ((1 - Constants.BETA) * (sum / Main.numVertices));
         return s;
     }
 
@@ -333,6 +375,7 @@ public class QEG {
         return (vDegree.get(nodeId) < k);
     }
 
+    
     public void printSubgraph(Set<Integer> vertices) {
         for (int nodeId : vertices) {
             if (!idNodeMap.containsKey(nodeId)) {
@@ -347,5 +390,23 @@ public class QEG {
             nodeStr += temp;
             System.out.println(nodeStr);
         }
+    }
+
+    @Override
+    public String toString() {
+        String nodeStr = "";
+        for (int nodeId : this.V) {
+            if (!idNodeMap.containsKey(nodeId)) {
+                System.err.println("Error inside QEG.printSubgraph(): Vertex not in QEG");
+            }
+            Node vertex = idNodeMap.get(nodeId);
+
+            nodeStr += "[" + nodeId + ":" + vertex.score + "]->";
+
+            Set<Integer> temp = new HashSet<Integer>(vertex.adjList);
+            nodeStr += temp;
+            nodeStr+="\n";
+        }
+        return nodeStr;
     }
 }

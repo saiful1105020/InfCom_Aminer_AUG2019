@@ -12,7 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +32,8 @@ public class Main {
     public static Author authors[] = new Author[Constants.MAX_AUTH_ID + 1];
     public static int numArticles = 0;
     public static int maxDegree = 0;
+    public static int maxK = 0;
+    public static int numVertices = Constants.MAX_AUTH_ID - Constants.MIN_AUTH_ID+1;
 
     /**
      * @param args the command line arguments
@@ -227,22 +231,27 @@ public class Main {
             queryTerms.add(input.nextLine());
             System.out.println(queryTerms.get(i));
         }
-        */
+         */
 
         long startTime, endTime, totalTime;
         int runs = Constants.RUNS;
 
+        startTime = System.nanoTime();
+        CLTree.buildTree();
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("CL-tree with iList: " + totalTime + " ms");
+
+        maxK = CLTree.root.getkMax();
         
         queryTerms.add("database");
         queryTerms.add("data mining");
         int queryType = Constants.OR_PREDICATE;
-        
+
         Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);
          
-        
-        
-        /*
+ 
         startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
         {
@@ -260,13 +269,7 @@ public class Main {
         endTime = System.nanoTime();
         totalTime = (endTime - startTime)/(1000000);
         System.out.println("PRUNE: "+((double)totalTime)/runs+" ms");
-        */
         
-        startTime = System.nanoTime();
-        CLTree.buildTree();
-        endTime = System.nanoTime();
-        totalTime = (endTime - startTime) / (1000000);
-        System.out.println("CL-tree with iList: " + totalTime + " ms");
         
         startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
@@ -276,5 +279,6 @@ public class Main {
         endTime = System.nanoTime();
         totalTime = (endTime - startTime)/(1000000);
         System.out.println("TREE: "+((double)totalTime)/runs+" ms");
+        
     }
 }
