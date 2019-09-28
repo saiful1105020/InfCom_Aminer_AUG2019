@@ -10,10 +10,10 @@ package graph_parser;
  * @author MSI
  */
 public class Constants {
-    public static final String INPUT_DIR = "../Dataset_Preprocessed/small_dataset";
+    public static final String INPUT_DIR = "../Dataset_Preprocessed/Augmented_1K";
     public static final int MIN_AUTH_ID = 1;
     public static final int MAX_AUTH_ID = 10000;
-    public static final int NUM_KEYWORDS = 1000;
+    public static final int NUM_KEYWORDS = 100;
     public static final double MATCHING_THRESHOLD = 0.30;
     
     public static boolean LOAD_GRAPH = false;
@@ -28,4 +28,6 @@ public class Constants {
     public static final int INVALID_INT = Integer.MIN_VALUE;
     
     public static double BETA = 0.90;
+    
+    public static boolean SPECIAL_REGION_PRINT = false;
 }

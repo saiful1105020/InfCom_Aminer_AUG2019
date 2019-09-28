@@ -6,6 +6,7 @@
 package graph_parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +20,7 @@ import java.util.Set;
 public class TreeExplore {
 
     KICQ kicq;
+    static int nodesAccessed = 0;
     //QEG qeg;
 
     PriorityQueue<Community> Q;
@@ -42,13 +44,12 @@ public class TreeExplore {
         this.Q = new PriorityQueue<Community>(KICQ.r, CommunityComparator);
 
         this.solve();
-        
 
         if (Constants.SHOW_OUTPUT) {
             for (int i = 0; i < KICQ.r; i++) {
                 Community c = this.Q.remove();
                 System.out.println("Top-" + (KICQ.r - i) + ": " + c.getK() + "-core");
-                //System.out.println(c.getvSet());
+                System.out.println(c.getvSet());
                 System.out.println("Score: " + c.getScore());
             }
         }
@@ -62,7 +63,25 @@ public class TreeExplore {
         visitTree(CLTree.root);
     }
 
+    public Set<Integer> decompressVertices(TreeNode u) {
+        Set<Integer> testSet = new LinkedHashSet<>(u.vertexSet);
+        TreeNode iter = u;
+        while (iter.childNodes.size() != 0) {
+            for (TreeNode child : iter.childNodes) {
+                testSet.addAll(decompressVertices(child));
+            }
+        }
+        return testSet;
+    }
+
     public void visitTree(TreeNode u) {
+        if(u.vertexSet.contains(931))
+        {
+            System.out.println("K: "+u.getCohesionFactor());
+            System.out.println("Tree Node ID: "+u.getTreeNodeId());
+            System.err.println("Problem with this node");
+        }
+        
         if (u.childNodes.size() != 0) {
             double maxDesScore = maxDescendentScore(u);
 
@@ -72,14 +91,33 @@ public class TreeExplore {
                 //In Root, inverted list is not maintained for memory efficiency
                 //Force to visit descendants of root
             }
-
+            /*
+            if (u.getTreeNodeId() == 11) {
+                System.out.println("Before Exploring");
+                System.out.println(u.fullVertexSet);
+            }
+             */
             if (maxDesScore > rTopScore) {
+                u.fullVertexSet.addAll(u.vertexSet);
                 for (TreeNode v : u.childNodes) {
+                    /*
+                    if (u.getTreeNodeId() == 11) {
+                        System.out.println("Before Visiting Child: " + v.getTreeNodeId());
+                        System.out.println(u.fullVertexSet);
+                        System.out.println(v.fullVertexSet);
+                    }
+                     */
                     visitTree(v);
                     u.fullVertexSet.addAll(v.fullVertexSet);
+                    /*
+                    if (u.getTreeNodeId() == 11) {
+                        System.out.println("After Visiting Child: " + v.getTreeNodeId());
+                        System.out.println(u.fullVertexSet);
+                        System.out.println(v.fullVertexSet);
+                    }
+                     */
                     v.fullVertexSet.clear();
                 }
-
             }
         } else {
             //At leaf node, compute QEG vertices
@@ -117,20 +155,31 @@ public class TreeExplore {
         }
          */
         double rTopScore = this.Q.peek().getScore();
+
         if (u.getCohesionFactor() >= KICQ.k_min && maxNodeScore > rTopScore) {
-            //BASIC-ALGO
-            //System.out.println("LEAF: "+u.fullVertexSet);
-            QEG localQeg = new QEG(kicq, u.fullVertexSet);
-            if(localQeg.V.size()!=0)
+            nodesAccessed++;
+
+            QEG localQeg = new QEG(kicq, new LinkedHashSet(u.fullVertexSet));
+
+            if (u.getTreeNodeId() == 14) {
+                System.out.println(u.getCohesionFactor());
+                System.out.println(u.fullVertexSet);
+                System.out.println(localQeg);
+                Constants.SPECIAL_REGION_PRINT = true;
+            }
+
+            if (localQeg.V.size() != 0) {
+                ModifiedPruneExplore solve = new ModifiedPruneExplore(localQeg, u.getCohesionFactor(), Q);
+            }
+            
+            if(u.getTreeNodeId()==11)
             {
-                //System.out.println(localQeg);
-                modifiedPruneExplore(localQeg ,localQeg.V, KICQ.k_min, u.getCohesionFactor());
-                //Apply Exploration for this small QEG
+                Constants.SPECIAL_REGION_PRINT = false;
             }
         }
         return;
     }
-    
+
     public void modifiedPruneExplore(QEG localQEG, Set<Integer> H, int k, int k_max) {
         //System.out.println("Starting k: "+k);
 
@@ -138,12 +187,10 @@ public class TreeExplore {
         int maxDegree = Integer.MIN_VALUE;
         for (int vId : H) {
             int deg = localQEG.vertexDegree.get(vId);
-            if(deg>maxDegree)
-            {
+            if (deg > maxDegree) {
                 maxDegree = deg;
             }
-            if(deg<minDegree)
-            {
+            if (deg < minDegree) {
                 minDegree = deg;
             }
         }
@@ -193,6 +240,10 @@ public class TreeExplore {
     }
 
     public double maxDescendentScore(TreeNode u) {
+
+        if (u == CLTree.root) {
+            return 0.0;
+        }
         double score = 0.0;
 
         double cohesivenessScore = (Constants.BETA * u.getkMax()) / Main.maxDegree;
@@ -228,6 +279,10 @@ public class TreeExplore {
     }
 
     public double maxNodeScore(TreeNode u) {
+
+        if (u == CLTree.root) {
+            return 0.0;
+        }
         double score = 0.0;
 
         double cohesivenessScore = (Constants.BETA * u.getCohesionFactor()) / Main.maxDegree;

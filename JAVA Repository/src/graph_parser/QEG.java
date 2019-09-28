@@ -82,16 +82,18 @@ public class QEG {
     }
     
     public QEG(KICQ kicq, Set<Integer> vertexSet) {
+        /*
         int n;
         n = kicq.keywords.length;
+        
 
         for (int i = 0; i < n; i++) {
             Set<Integer> termVertices = new HashSet<Integer>();
             for (int j = 0; j < kicq.keywords[i].size(); j++) {
                 int keywordId = kicq.keywords[i].get(j);
                 Set<Integer> keywordVertices = GlobalInvertedList.IL[keywordId];
+                keywordVertices.retainAll(vertexSet);
                 termVertices.addAll(keywordVertices);
-                termVertices.retainAll(vertexSet);
             }
 
             if (kicq.predicate == Constants.OR_PREDICATE) {
@@ -104,15 +106,18 @@ public class QEG {
                 }
             }
         }
-
+        */
+        this.V = vertexSet;
         //System.out.println(this.V);
         for (int nodeId : this.V) {
             Node node = new Node(nodeId, kicq);
             node.adjList.retainAll(this.V);
+            
             int deg = node.adjList.size();
             if (deg > maxDegree) {
                 maxDegree = deg;
             }
+            
             idNodeMap.put(nodeId, node);
             //System.out.println(node);
         }

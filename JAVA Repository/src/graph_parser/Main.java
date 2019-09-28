@@ -274,11 +274,12 @@ public class Main {
         startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
         {
+            TreeExplore.nodesAccessed = 0;
             TreeExplore solve = new TreeExplore(augmentedQuery);
         }
         endTime = System.nanoTime();
         totalTime = (endTime - startTime)/(1000000);
         System.out.println("TREE: "+((double)totalTime)/runs+" ms");
-        
+        System.out.println("Nodes Accessed: "+TreeExplore.nodesAccessed);
     }
 }
