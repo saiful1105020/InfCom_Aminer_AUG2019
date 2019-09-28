@@ -49,17 +49,10 @@ public class BasicExplore {
             for (int i = 0; i < KICQ.r; i++) {
                 Community c = this.Q.remove();
                 System.out.println("Top-" + (KICQ.r - i) + ": " + c.getK() + "-core");
-                //this.qeg.printSubgraph(c.getvSet());
+                //System.out.println(c.getvSet());
                 System.out.println("Score: " + c.getScore());
             }
         }
-
-        /*
-        Integer testIds[] = {8556, 8560, 8561, 8557, 8562, 3699, 8558, 8563, 8564, 8559};
-        Set<Integer> testSet = new HashSet<>(Arrays.asList(testIds));
-        this.qeg.printSubgraph(testSet);
-        System.exit(0);
-        */
     }
 
     public void solve() {
@@ -70,16 +63,13 @@ public class BasicExplore {
         double rTopScore = this.Q.peek().getScore();
 
         for (int k = KICQ.k_min; k <= qeg.maxDegree; k++) {
-            //System.out.println("k-core: k=" + k + "\n----------\n");
             //Find maximal k-core
             Set<Integer> Vk = this.qeg.findMaxCore(this.qeg.V, k);
-            //System.out.println(Vk);
-
+            
             if(Vk.size()==0)
             {
                 break;
             }
-            //this.qeg.printSubgraph(Vk);
             //Find set of connected components
             ArrayList<Set> components = this.qeg.findConnectedComponents(Vk);
             //System.out.println("Number of components: "+components.size());

@@ -47,11 +47,21 @@ public class Community {
         this.vSet = vSet;
     }
 
+    public boolean isContainedBy(Object obj) {
+        Community c = (Community) obj;
+        
+        Set<Integer> temp = new LinkedHashSet<>(this.vSet);
+        temp.removeAll(c.vSet);
+        return (temp.size()==0) || (this.equals(c));
+    }
+
     @Override
     public boolean equals(Object obj) {
         Community c = (Community) obj;
         return this.vSet.equals(c.vSet);
     }
+    
+    
 
     public int getK() {
         return k;

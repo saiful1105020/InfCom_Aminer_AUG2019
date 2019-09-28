@@ -75,29 +75,87 @@ public class ModifiedPruneExplore {
             double score = this.qeg.score(componentNodes, k);
 
             if (score > rTopScore) {
+                /**
+                 * For debugging
+                 */
+                //System.out.println("Before inserting new community");
+                /*
+                for (Community c : Q) {
+                    System.out.println("k = " + c.getK());
+                    System.out.println(c.getvSet());
+                    System.out.println("score = " + c.getScore());
+                }
+                */
                 Community candidate = new Community(componentNodes, score, k);
 
-                if (this.Q.contains(candidate)) {
-                    this.Q.remove(candidate);
-                    this.Q.add(candidate);
-                } else {
-                    this.Q.remove();
-                    this.Q.add(candidate);
+                boolean containedInQueue = false;
+                ArrayList<Community> contained = new ArrayList<Community>();
+
+                for (Community c : Q) {
+                    if (c.getvSet().size() != 0 && c.isContainedBy(candidate) && c.getK() <= candidate.getK()) {
+                        //System.out.println("PREVIOUS COMMUNITY IS CONTAINED");
+                        //System.out.println("--> " + c.getvSet());
+                        containedInQueue = true;
+                        contained.add(c);
+                    }
                 }
 
+                boolean insertCandidate = true;
+                for (Community c : Q) {
+                    if (candidate.isContainedBy(c) && candidate.getK()<= c.getK()) {
+                        //System.out.println("NEW CANDIDATE IS ALREADY CONTAINED");
+                        insertCandidate = false;
+                    }
+                }
+
+                if (containedInQueue) {
+                    //System.out.println("CONTAINED OLD COMMUNITY REMOVED");
+                    //System.out.println("CONTAINED COMMUNITIES: "+contained.size());
+                    for(Community c:contained)
+                    {
+                        Q.remove(c);
+                    }
+                    
+                    Q.add(candidate);
+                }
+
+                if (!containedInQueue && insertCandidate) {
+                    //System.out.println("COMMUNITY WITH LEAST SCORE REMOVED");
+                    //remove the last only if already not removed and a community needs to be inserted
+                    Q.remove();
+                    Q.add(candidate);
+                }
+                
+                if(Q.size()<KICQ.r)
+                {
+                    int additional = KICQ.r - Q.size();
+                    for(int l=0;l<additional;l++)
+                    {
+                        Community empty = new Community();
+                        Q.add(empty);
+                    }
+                    //System.out.println("FILLED UP Q WITH EMPTY "+additional);
+                }
+
+                /*
+                System.out.println("After inserting new community");
+                for (Community c : Q) {
+                    System.out.println("k = " + c.getK());
+                    System.out.println(c.getvSet());
+                    System.out.println("score = " + c.getScore());
+                }
+                */
                 rTopScore = this.Q.peek().getScore();
             }
 
             for (int newK = k + 1; newK <= k_max; newK++) {
                 double upperBoundScore = qeg.score(componentNodes, newK);
                 if (upperBoundScore > rTopScore) {
-                    if(Constants.SPECIAL_REGION_PRINT)
-                    {
+                    if (Constants.SPECIAL_REGION_PRINT) {
                         System.out.println("Expanding for new k: " + newK);
                     }
                     this.solve(componentNodes, newK, k_max);
-                    if(Constants.SPECIAL_REGION_PRINT)
-                    {
+                    if (Constants.SPECIAL_REGION_PRINT) {
                         System.out.println("Returning ...");
                     }
                     break;

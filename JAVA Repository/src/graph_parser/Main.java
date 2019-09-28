@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Scanner;
@@ -176,7 +177,20 @@ public class Main {
 
     public static void main(String[] args) {
         // TODO code application logic here
-
+        /*
+        Community c1 = new Community();
+        Community c2 = new Community();
+        ArrayList<Integer> t = new ArrayList<Integer> (Arrays.asList(7360, 1569, 4132, 4135, 7047, 8999, 3242, 939, 686, 2225, 659, 252));
+        c1.setvSet(new LinkedHashSet<>(t));
+        
+        t = new ArrayList<Integer> (Arrays.asList(769, 7169, 9347, 1416, 5906, 6236, 5791, 2657, 8167, 3496, 3498, 1644, 2157, 178, 6069, 9462, 7674, 5373, 766, 970, 7120, 5789, 931, 1444, 5480, 7681, 3451, 1569, 696, 2578, 7360, 7047, 659, 4132, 4135, 8999, 3242, 939, 686, 2225, 252));
+        c2.setvSet(new LinkedHashSet<>(t));
+        
+        System.out.println(c1.isContainedBy(c2));
+        System.out.println(c2.isContainedBy(c1));
+        System.exit(0);
+        */
+                
         if (Constants.LOAD_GRAPH) {
             //Compute graph from raw files
             loadGraph();
@@ -246,7 +260,7 @@ public class Main {
         
         queryTerms.add("database");
         queryTerms.add("data mining");
-        int queryType = Constants.OR_PREDICATE;
+        int queryType = Constants.AND_PREDICATE;
 
         Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);

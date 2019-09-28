@@ -18,9 +18,9 @@ public class Constants {
     
     public static boolean LOAD_GRAPH = false;
     public static boolean COMPUTE_CL_TREE = false;
-    public static boolean SHOW_OUTPUT =true;
+    public static boolean SHOW_OUTPUT =false;
     public static boolean DEBUG_MODE = false;
-    public static int RUNS = 1;
+    public static int RUNS = 100;
     
     public static final int AND_PREDICATE = 1;
     public static final int OR_PREDICATE = 0;
