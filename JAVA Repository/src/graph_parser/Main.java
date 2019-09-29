@@ -30,12 +30,11 @@ import org.json.simple.parser.*;
 public class Main {
 
     //public static ArrayList<Article> articles = new ArrayList<Article>();
-    public static Author authors[] = new Author[Constants.MAX_AUTH_ID + 1];
+    public static Author authors[];
     public static int numArticles = 0;
     public static int maxDegree = 0;
     public static int maxK = 0;
-    public static int numVertices = Constants.MAX_AUTH_ID - Constants.MIN_AUTH_ID+1;
-
+    public static int numVertices;
     /**
      * @param args the command line arguments
      */
@@ -176,19 +175,107 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        // TODO code application logic here
+        //Load Config
+        try {
+            Scanner config = new Scanner(new File("CONFIG.txt"));
+            while(config.hasNext())
+            {
+                String key = config.next();
+                String value = config.next();
+                
+                switch(key)
+                {
+                    case "INPUT_DIR":
+                        Constants.INPUT_DIR = value;
+                        break;
+                    case "MIN_AUTH_ID":
+                        Constants.MIN_AUTH_ID = Integer.parseInt(value);
+                        break;
+                    case "MAX_AUTH_ID":
+                        Constants.MAX_AUTH_ID = Integer.parseInt(value);
+                        break;
+                    case "NUM_KEYWORDS":
+                        Constants.NUM_KEYWORDS = Integer.parseInt(value);
+                        break;
+                    case "MATCHING_THRESHOLD":
+                        Constants.MATCHING_THRESHOLD = Double.parseDouble(value);
+                        break;
+                    case "K_MIN":
+                        Constants.K_MIN = Integer.parseInt(value);
+                        break;
+                    case "TOP_R":
+                        Constants.TOP_R = Integer.parseInt(value);
+                        break;
+                    case "BETA":
+                        Constants.BETA = Double.parseDouble(value);
+                        break;
+                    case "LOAD_GRAPH":
+                        if(value.equals("false"))
+                        {
+                            Constants.LOAD_GRAPH = false;
+                        }
+                        else
+                        {
+                            Constants.LOAD_GRAPH = true;
+                        }
+                        break;
+                    case "COMPUTE_CL_TREE":
+                        if(value.equals("false"))
+                        {
+                            Constants.COMPUTE_CL_TREE = false;
+                        }
+                        else
+                        {
+                            Constants.COMPUTE_CL_TREE = true;
+                        }
+                        break;
+                    case "SHOW_OUTPUT":
+                        if(value.equals("false"))
+                        {
+                            Constants.SHOW_OUTPUT = false;
+                        }
+                        else
+                        {
+                            Constants.SHOW_OUTPUT = true;
+                        }
+                        break;
+                    case "DEBUG_MODE":
+                        if(value.equals("false"))
+                        {
+                            Constants.DEBUG_MODE = false;
+                        }
+                        else
+                        {
+                            Constants.DEBUG_MODE = true;
+                        }
+                        break;
+                    case "RUNS":
+                        Constants.RUNS = Integer.parseInt(value);
+                        break;
+                    default:
+                        System.err.println("Error loading config");
+                        System.exit(0);
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        authors = new Author[Constants.MAX_AUTH_ID + 1];
+        numVertices = Constants.MAX_AUTH_ID - Constants.MIN_AUTH_ID+1;
         /*
-        Community c1 = new Community();
-        Community c2 = new Community();
-        ArrayList<Integer> t = new ArrayList<Integer> (Arrays.asList(7360, 1569, 4132, 4135, 7047, 8999, 3242, 939, 686, 2225, 659, 252));
-        c1.setvSet(new LinkedHashSet<>(t));
-        
-        t = new ArrayList<Integer> (Arrays.asList(769, 7169, 9347, 1416, 5906, 6236, 5791, 2657, 8167, 3496, 3498, 1644, 2157, 178, 6069, 9462, 7674, 5373, 766, 970, 7120, 5789, 931, 1444, 5480, 7681, 3451, 1569, 696, 2578, 7360, 7047, 659, 4132, 4135, 8999, 3242, 939, 686, 2225, 252));
-        c2.setvSet(new LinkedHashSet<>(t));
-        
-        System.out.println(c1.isContainedBy(c2));
-        System.out.println(c2.isContainedBy(c1));
-        System.exit(0);
+        System.out.println(Constants.INPUT_DIR);
+        System.out.println(Constants.MIN_AUTH_ID);
+        System.out.println(Constants.MAX_AUTH_ID);
+        System.out.println(Constants.NUM_KEYWORDS);
+        System.out.println(Constants.MATCHING_THRESHOLD);
+        System.out.println(Constants.K_MIN);
+        System.out.println(Constants.TOP_R);
+        System.out.println(Constants.BETA);
+        System.out.println(Constants.LOAD_GRAPH);
+        System.out.println(Constants.COMPUTE_CL_TREE);
+        System.out.println(Constants.SHOW_OUTPUT);
+        System.out.println(Constants.DEBUG_MODE);
+        System.out.println(Constants.RUNS);
         */
                 
         if (Constants.LOAD_GRAPH) {
@@ -259,8 +346,8 @@ public class Main {
 
         maxK = CLTree.root.getkMax();
         
-        queryTerms.add("database");
-        queryTerms.add("data mining");
+        queryTerms.add("machine learning");
+        queryTerms.add("information retrieval");
         int queryType = Constants.AND_PREDICATE;
 
         Query query = new Query(queryTerms, queryType);

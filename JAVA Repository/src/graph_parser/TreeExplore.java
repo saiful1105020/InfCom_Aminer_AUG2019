@@ -21,12 +21,32 @@ public class TreeExplore {
 
     KICQ kicq;
     static int nodesAccessed = 0;
+    Set<Integer> relevantTreeNodes = new LinkedHashSet<Integer>();
     //QEG qeg;
 
     PriorityQueue<Community> Q;
 
     public TreeExplore(KICQ kicq) {
         this.kicq = kicq;
+
+        for (int i = 0; i < kicq.keywords.length; i++) {
+            Set<Integer> termNodes = new LinkedHashSet<>();
+            for (int j : kicq.keywords[i]) {
+                termNodes.addAll(CLTree.invertedList[j]);
+            }
+
+            if (kicq.predicate == Constants.AND_PREDICATE) {
+                if (i == 0) {
+                    relevantTreeNodes = termNodes;
+                } else {
+                    relevantTreeNodes.retainAll(termNodes);
+                }
+            } else {
+                relevantTreeNodes.addAll(termNodes);
+            }
+        }
+        
+        //System.out.println(relevantTreeNodes);
 
         Comparator<Community> CommunityComparator = new Comparator<Community>() {
             @Override
@@ -49,7 +69,7 @@ public class TreeExplore {
                 Community c = this.Q.remove();
                 System.out.println("Top-" + (KICQ.r - i) + ": " + c.getK() + "-core");
                 //System.out.println(c.getvSet());
-                System.out.println("Score: " + c.getScore()); 
+                System.out.println("Score: " + c.getScore());
             }
         }
     }
@@ -78,11 +98,6 @@ public class TreeExplore {
         double maxDesScore = maxDescendentScore(u);
 
         double rTopScore = this.Q.peek().getScore();
-        if (u == CLTree.root) {
-            rTopScore = -1.0;
-            //In Root, inverted list is not maintained for memory efficiency
-            //Force to visit descendants of root
-        }
 
         int n = kicq.keywords.length;
 
@@ -108,11 +123,12 @@ public class TreeExplore {
         }
 
         if (maxDesScore > rTopScore) {
-
             for (TreeNode v : u.childNodes) {
-                visitTree(v);
-                u.fullVertexSet.addAll(v.fullVertexSet);
-                v.fullVertexSet.clear();
+                if (relevantTreeNodes.contains(v.getTreeNodeId())) {
+                    visitTree(v);
+                    u.fullVertexSet.addAll(v.fullVertexSet);
+                    v.fullVertexSet.clear();
+                }
             }
         }
 
@@ -142,7 +158,7 @@ public class TreeExplore {
                 System.out.println(localQeg);
                 Constants.SPECIAL_REGION_PRINT = true;
             }
-            */
+             */
             if (localQeg.V.size() != 0) {
                 ModifiedPruneExplore solve = new ModifiedPruneExplore(localQeg, u.getCohesionFactor(), Q);
             }
@@ -150,15 +166,14 @@ public class TreeExplore {
             if (u.getTreeNodeId() == 13) {
                 Constants.SPECIAL_REGION_PRINT = false;
             }
-            */
+             */
         }
         return;
     }
 
     public double maxDescendentScore(TreeNode u) {
-
         if (u == CLTree.root) {
-            return 0.0;
+            return 1.0;
         }
         double score = 0.0;
 

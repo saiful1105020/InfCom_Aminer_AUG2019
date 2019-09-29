@@ -18,8 +18,8 @@ import org.json.simple.JSONObject;
  */
 public class KICQ {
 
-    public static int k_min = 3;
-    public static int r = 1;
+    public static int k_min = Constants.K_MIN;
+    public static int r = Constants.TOP_R;
 
     Query query;
     

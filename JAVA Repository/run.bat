@@ -1,2 +1,2 @@
-python queryEmbedding.py 1000 0.20 2 "data mining" "social network analysis"
+java -jar InfCom_Aminer_AUG2019.jar
 pause
