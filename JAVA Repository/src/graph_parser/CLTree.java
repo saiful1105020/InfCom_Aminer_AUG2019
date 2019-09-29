@@ -5,6 +5,8 @@
  */
 package graph_parser;
 
+import static graph_parser.GlobalInvertedList.IL;
+import static graph_parser.GlobalInvertedList.fileName;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -12,8 +14,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
@@ -33,6 +37,9 @@ public class CLTree {
     public static int vertexDegree[] = new int[Constants.MAX_AUTH_ID + 1];
     public static int maxCohesionFactor = 0;
 
+    public static Set<Integer>[] invertedList = new LinkedHashSet[Constants.NUM_KEYWORDS + 1];
+    public static String invertedListFileName = "CLTree-InvertedList.txt";
+
     public static void buildTree() {
         if (Constants.COMPUTE_CL_TREE) {
             coreDecomposition();
@@ -49,6 +56,70 @@ public class CLTree {
         }
 
         //traverseTree(root);
+    }
+
+    public static void updateInvertedList(TreeNode u) {
+        int uid = u.getTreeNodeId();
+        for (int keyword : u.iList.keySet()) {
+            invertedList[keyword].add(uid);
+        }
+        for (TreeNode v : u.childNodes) {
+            updateInvertedList(v);
+        }
+    }
+
+    public static void storeIntoFile() {
+        try {
+            FileWriter fw = new FileWriter(new File(invertedListFileName));
+            for (int i = 1; i <= Constants.NUM_KEYWORDS; i++) {
+                JSONObject jo = new JSONObject();
+                jo.put("keyword", i);
+                jo.put("total-nodes", invertedList[i].size());
+                jo.put("nodes", invertedList[i]);
+                fw.write(jo.toJSONString());
+                fw.write("\n");
+                fw.flush();
+            }
+            fw.close();
+        } catch (IOException ex) {
+            Logger.getLogger(GlobalInvertedList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void loadInvertedList() {
+        if (Constants.COMPUTE_CL_TREE) {
+            //compute inverted list
+            //initiate
+            for (int i = 0; i <= Constants.NUM_KEYWORDS; i++) {
+                invertedList[i] = new LinkedHashSet<>();
+            }
+            updateInvertedList(root);
+            //write to file
+            storeIntoFile();
+        } else {
+            //read from file
+            try {
+                Scanner input = new Scanner(new File(invertedListFileName));
+                while (input.hasNext()) {
+                    Object obj = new JSONParser().parse(input.nextLine());
+                    JSONObject jo = (JSONObject) obj;
+
+                    int keywordId = (int) (long) jo.get("keyword");
+                    JSONArray jNodes = (JSONArray) jo.get("nodes");
+
+                    ArrayList<Integer> keywordNodes = new ArrayList<Integer>();
+                    for (Object item : jNodes) {
+                        keywordNodes.add((int) (long) item);
+                    }
+                    invertedList[keywordId] = new LinkedHashSet<Integer>(keywordNodes);
+                }
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(GlobalInvertedList.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(GlobalInvertedList.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
     }
 
     public static void readTreeFromFile() {
@@ -200,7 +271,7 @@ public class CLTree {
         }
 
     }
-    
+
     public static void bfsVisit(Set<Integer> connectedComponent, int nodeId, Set<Integer> vSet, HashMap<Integer, Boolean> visited) {
         LinkedList<Integer> queue = new LinkedList<Integer>();
         visited.put(nodeId, true);
@@ -209,13 +280,12 @@ public class CLTree {
         while (queue.size() != 0) {
             nodeId = queue.poll();
             connectedComponent.add(nodeId);
-            
+
             Set<Integer> adj = new LinkedHashSet(Main.authors[nodeId].getCoAuthorPaperCounts().keySet());
             adj.retainAll(vSet);
-            
+
             for (int v : adj) {
-                if(visited.get(v)==false)
-                {
+                if (visited.get(v) == false) {
                     visited.put(v, true);
                     queue.add(v);
                 }

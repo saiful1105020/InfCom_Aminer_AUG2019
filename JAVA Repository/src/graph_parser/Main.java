@@ -252,6 +252,7 @@ public class Main {
 
         startTime = System.nanoTime();
         CLTree.buildTree();
+        CLTree.loadInvertedList();
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("CL-tree with iList: " + totalTime + " ms");
