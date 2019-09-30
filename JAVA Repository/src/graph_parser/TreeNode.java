@@ -58,9 +58,9 @@ public class TreeNode {
     }
 
     public void attach() {
-        this.attachChildNodes();
-        this.compressVertices(this);
-        //this.attachAndCompressChildNodes();
+        //this.attachChildNodes();
+        //this.compressVertices(this);
+        this.attachAndCompressChildNodes();
     }
 
     public int getkMax() {

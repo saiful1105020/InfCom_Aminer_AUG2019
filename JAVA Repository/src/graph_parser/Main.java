@@ -337,13 +337,8 @@ public class Main {
         long startTime, endTime, totalTime;
         int runs = Constants.RUNS;
 
-        startTime = System.nanoTime();
         CLTree.buildTree();
         CLTree.loadInvertedList();
-        endTime = System.nanoTime();
-        totalTime = (endTime - startTime) / (1000000);
-        System.out.println("CL-tree with iList: " + totalTime + " ms");
-
         maxK = CLTree.root.getkMax();
         
         queryTerms.add("machine learning");
@@ -353,7 +348,6 @@ public class Main {
         Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);
          
- 
         startTime = System.nanoTime();
         for(int run=0;run<runs;run++)
         {

@@ -42,9 +42,17 @@ public class CLTree {
 
     public static void buildTree() {
         if (Constants.COMPUTE_CL_TREE) {
+            long startTime, endTime, totalTime;
+            int runs = Constants.RUNS;
+
+            startTime = System.nanoTime();
             coreDecomposition();
             root = new TreeNode();
             root.attach();
+            endTime = System.nanoTime();
+            totalTime = (endTime - startTime) / (1000000);
+            System.out.println("CL-tree with iList: " + totalTime + " ms");
+            
             try {
                 writeSubtree("CL_TREE.txt", "CL-TREE-EDGES.txt", root);
             } catch (IOException ex) {
@@ -118,7 +126,7 @@ public class CLTree {
             } catch (ParseException ex) {
                 Logger.getLogger(GlobalInvertedList.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
         }
     }
 
@@ -200,9 +208,12 @@ public class CLTree {
 
         NODE_FW.write(Integer.toString(TreeNode.treeNodeIdCounter));
         NODE_FW.write("\n");
-        NODE_FW.flush();
-
+        
         recursiveWrite(NODE_FW, EDGE_FW, root);
+        
+        NODE_FW.flush();
+        EDGE_FW.flush();
+        
         NODE_FW.close();
         EDGE_FW.close();
     }
@@ -210,11 +221,11 @@ public class CLTree {
     public static void recursiveWrite(FileWriter NODE_FW, FileWriter EDGE_FW, TreeNode tnode) throws IOException {
         NODE_FW.write(tnode.toJSON().toJSONString());
         NODE_FW.write("\n");
-        NODE_FW.flush();
+        //NODE_FW.flush();
 
         for (TreeNode child : tnode.childNodes) {
             EDGE_FW.write(tnode.getTreeNodeId() + "\t" + child.getTreeNodeId() + "\n");
-            EDGE_FW.flush();
+            //EDGE_FW.flush();
             recursiveWrite(NODE_FW, EDGE_FW, child);
         }
     }
