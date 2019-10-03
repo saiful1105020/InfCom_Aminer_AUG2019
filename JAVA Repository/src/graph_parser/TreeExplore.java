@@ -122,6 +122,8 @@ public class TreeExplore {
             }
         }
 
+        Set<Integer> nodeExclusiveVertexSet = new LinkedHashSet<Integer>(u.fullVertexSet);
+        
         if (maxDesScore > rTopScore) {
             for (TreeNode v : u.childNodes) {
                 if (relevantTreeNodes.contains(v.getTreeNodeId())) {
@@ -131,16 +133,14 @@ public class TreeExplore {
                 }
             }
         }
-
-
-        /*
-        if(u.vertexSet.contains(1603))
+        
+        if(nodeExclusiveVertexSet.size()==0)
         {
-            System.out.println("Node ID: "+u.getTreeNodeId());
-            System.out.println("K: "+u.getCohesionFactor());
-            System.out.println(u.fullVertexSet);
+            return;
         }
-         */
+        
+        //update max node score
+
         double maxNodeScore = maxNodeScore(u);
 
         rTopScore = this.Q.peek().getScore();

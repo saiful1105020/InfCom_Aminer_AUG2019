@@ -1,9 +1,20 @@
 TaskList
 --------
 - Test CL-tree
-+ Write CL-tree in File
-+ Read CL-tree from File
-+ Implement TREE-VISIT
+- Write CL-tree in File
+- Read CL-tree from File
+- Add k_max in CL-tree
+- Implement connected component using BFS
+- Replace maxDegree in QEG by mak-k value
+- Replace QEG.|V| with |V|
++ Remove empty tree-nodes
++ Inverted index of tree-nodes
++ Check for tighter upper bounds
++ Use files during index build-up
+- Implement TREE-VISIT
++ Edge if at least 3 publications
 + Update Experiment Section
 + Plan Experiment
 + TBA
+
+6277682

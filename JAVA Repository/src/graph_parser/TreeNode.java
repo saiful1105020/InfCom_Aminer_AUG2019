@@ -5,14 +5,23 @@
  */
 package graph_parser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -36,8 +45,19 @@ public class TreeNode {
 
     Map<Integer, iListElement> iList = new HashMap<>();
 
-    public TreeNode() {
+    public TreeNode(String dummy, int nodeId) {
+        this.treeNodeId = nodeId;
+    }
+
+    public TreeNode()
+    {
+        this.cohesionFactor = 0;
+        this.parent = null;
+    }
+    
+    public TreeNode(String root) {
         //constructor for root node
+        //this.cohesionFactor = Constants.K_MIN-1;
         this.cohesionFactor = 0;
         this.parent = null;
         this.treeNodeId = TreeNode.treeNodeIdCounter++;
@@ -55,6 +75,15 @@ public class TreeNode {
     public TreeNode(TreeNode parent) {
         //constructor for other nodes
         this.parent = parent;
+    }
+    
+    public void preempt()
+    {
+        //this.childNodes stays the same
+        this.fullVertexSet.clear();
+        this.iList.clear();
+        //this.parent stays the same
+        this.vertexSet.clear();
     }
 
     public void attach() {
@@ -178,6 +207,7 @@ public class TreeNode {
                 TreeNode tnode = new TreeNode(this);
                 tnode.setCohesionFactor(tnode.getParent().getCohesionFactor() + 1);
                 tnode.vertexSet = componentNodes;
+                //System.out.println("Component Size: " + componentNodes.size());
                 tnode.setkMax(tnode.getCohesionFactor());   //initially, k_max = cohesion factor of this node
 
                 /**
@@ -214,16 +244,15 @@ public class TreeNode {
                 //Node is formed. Needs compression and MaxOutScore calculation later
                 tnode.treeNodeId = TreeNode.treeNodeIdCounter++;
                 tnode.iList = tempIList;
-
+                //System.out.println(tnode.treeNodeId);
                 this.childNodes.add(tnode);
             }
 
             /**
-             * Parent is now linked with its children
-             * Now, compress parent node. Before that, update MaxOutScore
-             * After compression, update MaxInScore
+             * Parent is now linked with its children Now, compress parent node.
+             * Before that, update MaxOutScore After compression, update
+             * MaxInScore
              */
-            
             for (int keyword : this.iList.keySet()) {
                 double maxOutScore = 0.0;
                 for (TreeNode child : this.childNodes) {
@@ -243,8 +272,8 @@ public class TreeNode {
             }
 
             /**
-             * Compress Parent Node
-             * Update MaxInScore to 0 if relVertices is empty after compression
+             * Compress Parent Node Update MaxInScore to 0 if relVertices is
+             * empty after compression
              */
             for (TreeNode child : this.childNodes) {
                 //compress node vertices
@@ -260,16 +289,99 @@ public class TreeNode {
                     }
                 }
             }
-            
-            for(TreeNode child: this.childNodes)
-            {
+
+            //save all the children
+            for (TreeNode child : this.childNodes) {
+                this.saveTreeNodeToFile(child);
+            }
+
+            //save parent node
+            //this.saveTreeNodeToFile(this);
+            //free-up memory
+            //this.preempt();
+            for (TreeNode child : this.childNodes) {
+                //load child node
+                loadTreeNodeFromFile(child);
+
                 child.attachAndCompressChildNodes();
                 if (this.kMax < child.kMax) {
                     this.kMax = child.kMax;
                 }
             }
+            //reload parent
+            //this.loadTreeNodeFromFile(this);
+        }
+    }
+
+    public void saveTreeNodeToFile(TreeNode child) {
+        try {
+            //System.out.println("Saving node in file: " + child.treeNodeId);
+            FileWriter fw = new FileWriter(new File(child.getTreeNodeId() + ".txt"));
+            fw.write(child.toJSON().toJSONString());
+            fw.flush();
+            fw.close();
+            child = new TreeNode("DUMMY_NODE", child.treeNodeId);
+        } catch (IOException ex) {
+            Logger.getLogger(TreeNode.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Severe Error While Saving CL Tree Node");
+            System.exit(0);
         }
 
+    }
+
+    public void loadTreeNodeFromFile(TreeNode child) {
+        Scanner input;
+        try {
+            input = new Scanner(new File(child.treeNodeId + ".txt"));
+            Object obj = new JSONParser().parse(input.nextLine());
+            JSONObject jo = (JSONObject) obj;
+            int tNodeId = (int) (long) jo.get("node-id");
+
+            int cohesionFactor = (int) (long) jo.get("cohesion-factor");
+            child.setCohesionFactor(cohesionFactor);
+            int kMax = (int) (long) jo.get("kmax");
+            child.setkMax(kMax);
+
+            JSONArray vertexSet = (JSONArray) jo.get("vertices");
+            for (int j = 0; j < vertexSet.size(); j++) {
+                int v = (int) (long) vertexSet.get(j);
+                child.vertexSet.add(v);
+            }
+
+            JSONArray jKeywords = (JSONArray) jo.get("keywords");
+            for (int j = 0; j < jKeywords.size(); j++) {
+                JSONObject jKeyword = (JSONObject) jKeywords.get(j);
+                int keywordId = (int) ((long) jKeyword.get("keyword-id"));
+
+                iListElement newElement = new iListElement();
+                JSONArray relVerts = (JSONArray) jKeyword.get("rel-vertices");
+                for (int k = 0; k < relVerts.size(); k++) {
+                    int vert = (int) (long) relVerts.get(k);
+                    newElement.addRelVertex(vert);
+                }
+
+                double maxInScore = (double) jKeyword.get("max-in-score");
+                newElement.setMaxInScore(maxInScore);
+                double maxOutScore = (double) jKeyword.get("max-out-score");
+                newElement.setMaxOutScore(maxOutScore);
+
+                child.iList.put(keywordId, newElement);
+            }
+
+            input.close();
+
+            File file = new File(child.treeNodeId + ".txt");
+            boolean success = file.delete();
+            if (!success) {
+                System.err.println("Error deleting file: " + child.treeNodeId);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(TreeNode.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("SEVERE ERROR READING CL TREE NODE");
+        } catch (ParseException ex) {
+            Logger.getLogger(TreeNode.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("SEVERE ERROR PARSING CL TREE NODE");
+        }
     }
 
     public TreeNode getParent() {

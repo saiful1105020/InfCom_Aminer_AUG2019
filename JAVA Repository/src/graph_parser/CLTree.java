@@ -12,12 +12,15 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
@@ -40,6 +43,42 @@ public class CLTree {
     public static Set<Integer>[] invertedList = new LinkedHashSet[Constants.NUM_KEYWORDS + 1];
     public static String invertedListFileName = "CLTree-InvertedList.txt";
 
+    public static LinkedList<TreeNode> bfsQ = new LinkedList<>();
+
+    public static void removeEmptyNodes() {
+        bfsQ.add(root);
+        while (!bfsQ.isEmpty()) {
+            TreeNode node = bfsQ.poll();
+
+            if (node != CLTree.root && node.getParent() == null) {
+                continue;
+            }
+
+            boolean changed = fixTree(node);
+
+            for (TreeNode child : node.childNodes) {
+                bfsQ.add(child);
+            }
+
+            if (changed) {
+                node.preempt();
+            }
+        }
+    }
+
+    public static boolean fixTree(TreeNode node) {
+        if (node.getParent() != null && node.vertexSet.size() == 0) {
+            for (TreeNode child : node.childNodes) {
+                child.setParent(node.getParent());
+                node.getParent().childNodes.add(child);
+            }
+
+            node.getParent().childNodes.remove(node);
+            return true;
+        }
+        return false;
+    }
+
     public static void buildTree() {
         if (Constants.COMPUTE_CL_TREE) {
             long startTime, endTime, totalTime;
@@ -47,12 +86,18 @@ public class CLTree {
 
             startTime = System.nanoTime();
             coreDecomposition();
-            root = new TreeNode();
+            long temp = (System.nanoTime() - startTime) / 1000000;
+            //System.out.println("Core Decomposition done: "+temp+" ms");
+
+            root = new TreeNode("root");
             root.attach();
+            removeEmptyNodes();
+            reorderChildren(root);
+
             endTime = System.nanoTime();
             totalTime = (endTime - startTime) / (1000000);
             System.out.println("CL-tree with iList: " + totalTime + " ms");
-            
+
             try {
                 writeSubtree("CL_TREE.txt", "CL-TREE-EDGES.txt", root);
             } catch (IOException ex) {
@@ -64,6 +109,27 @@ public class CLTree {
         }
 
         //traverseTree(root);
+    }
+
+    public static void reorderChildren(TreeNode node) {
+        
+        Collections.sort(node.childNodes, (o1, o2) -> {
+            TreeNode n1 = (TreeNode) o1;
+            TreeNode n2 = (TreeNode) o2;
+            if (n1.getkMax() > n2.getkMax()) {
+                return -1;
+            }
+            if (n1.getkMax() < n2.getkMax()) {
+                return 1;
+            }
+            return 0;
+        });
+        
+        for(TreeNode child:node.childNodes)
+        {
+            reorderChildren(child);
+        }
+        
     }
 
     public static void updateInvertedList(TreeNode u) {
@@ -139,7 +205,7 @@ public class CLTree {
             int totalTreeNodes = Integer.parseInt(input.nextLine());
             TreeNode treeNodes[] = new TreeNode[totalTreeNodes];
 
-            for (int i = 0; i < totalTreeNodes; i++) {
+            while (input.hasNext()) {
                 Object obj = new JSONParser().parse(input.nextLine());
                 JSONObject jo = (JSONObject) obj;
                 int tNodeId = (int) (long) jo.get("node-id");
@@ -208,12 +274,12 @@ public class CLTree {
 
         NODE_FW.write(Integer.toString(TreeNode.treeNodeIdCounter));
         NODE_FW.write("\n");
-        
+
         recursiveWrite(NODE_FW, EDGE_FW, root);
-        
+
         NODE_FW.flush();
         EDGE_FW.flush();
-        
+
         NODE_FW.close();
         EDGE_FW.close();
     }
