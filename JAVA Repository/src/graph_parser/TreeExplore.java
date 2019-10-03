@@ -95,6 +95,17 @@ public class TreeExplore {
 
     public void visitTree(TreeNode u) {
 
+        if (u.getCohesionFactor() < (Constants.K_MIN-1)) {
+            for (TreeNode v : u.childNodes) {
+                if (relevantTreeNodes.contains(v.getTreeNodeId())) {
+                    visitTree(v);
+                }
+            }
+            return;
+        }
+        
+        //Ensures k is at least (k_min - 1). So children are k_min cores
+        
         double maxDesScore = maxDescendentScore(u);
 
         double rTopScore = this.Q.peek().getScore();
