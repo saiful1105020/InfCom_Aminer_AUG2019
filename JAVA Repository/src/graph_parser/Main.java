@@ -343,7 +343,7 @@ public class Main {
         
         queryTerms.add("machine learning");
         queryTerms.add("information retrieval");
-        int queryType = Constants.AND_PREDICATE;
+        int queryType = Constants.OR_PREDICATE;
 
         Query query = new Query(queryTerms, queryType);
         KICQ augmentedQuery = new KICQ(query);

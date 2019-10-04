@@ -290,19 +290,23 @@ public class TreeNode {
                 }
             }
 
+            int counter=0;
             //save all the children
             for (TreeNode child : this.childNodes) {
-                this.saveTreeNodeToFile(child);
+                if(counter!=0) this.saveTreeNodeToFile(child);
+                counter++;
             }
 
             //save parent node
             //this.saveTreeNodeToFile(this);
             //free-up memory
             //this.preempt();
+            counter = 0;
             for (TreeNode child : this.childNodes) {
                 //load child node
-                loadTreeNodeFromFile(child);
-
+                if(counter!=0) loadTreeNodeFromFile(child);
+                counter++;
+                
                 child.attachAndCompressChildNodes();
                 if (this.kMax < child.kMax) {
                     this.kMax = child.kMax;

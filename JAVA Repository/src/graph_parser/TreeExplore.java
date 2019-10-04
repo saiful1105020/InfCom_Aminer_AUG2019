@@ -170,8 +170,28 @@ public class TreeExplore {
                 Constants.SPECIAL_REGION_PRINT = true;
             }
              */
+            
+            int k_max = u.getCohesionFactor();
+            
+            int localMaxDegree = 0;
+            for(int v:nodeExclusiveVertexSet)
+            {
+                if(localQeg.vertexDegree.containsKey(v))
+                {
+                    int deg = localQeg.vertexDegree.get(v);
+                    if(localMaxDegree<deg)
+                    {
+                        localMaxDegree = deg;
+                    }
+                }
+            }
+            if(k_max>localMaxDegree)
+            {
+                k_max = localMaxDegree;
+            }
+            
             if (localQeg.V.size() != 0) {
-                ModifiedPruneExplore solve = new ModifiedPruneExplore(localQeg, u.getCohesionFactor(), Q);
+                ModifiedPruneExplore solve = new ModifiedPruneExplore(localQeg, k_max, Q);
             }
             /*
             if (u.getTreeNodeId() == 13) {
