@@ -45,14 +45,7 @@ public class BasicExplore {
             this.solve();
         }
 
-        if (Constants.SHOW_OUTPUT) {
-            for (int i = 0; i < KICQ.r; i++) {
-                Community c = this.Q.remove();
-                System.out.println("Top-" + (KICQ.r - i) + ": " + c.getK() + "-core");
-                //System.out.println(c.getvSet());
-                System.out.println("Score: " + c.getScore());
-            }
-        }
+        
     }
 
     public void solve() {

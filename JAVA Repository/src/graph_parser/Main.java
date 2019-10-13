@@ -35,6 +35,7 @@ public class Main {
     public static int maxDegree = 0;
     public static int maxK = 0;
     public static int numVertices;
+
     /**
      * @param args the command line arguments
      */
@@ -175,16 +176,17 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        //Auto generated queries saved in file
+        QueryGenerator autoQuery = new QueryGenerator();
+
         //Load Config
         try {
             Scanner config = new Scanner(new File("CONFIG.txt"));
-            while(config.hasNext())
-            {
+            while (config.hasNext()) {
                 String key = config.next();
                 String value = config.next();
-                
-                switch(key)
-                {
+
+                switch (key) {
                     case "INPUT_DIR":
                         Constants.INPUT_DIR = value;
                         break;
@@ -210,42 +212,30 @@ public class Main {
                         Constants.BETA = Double.parseDouble(value);
                         break;
                     case "LOAD_GRAPH":
-                        if(value.equals("false"))
-                        {
+                        if (value.equals("false")) {
                             Constants.LOAD_GRAPH = false;
-                        }
-                        else
-                        {
+                        } else {
                             Constants.LOAD_GRAPH = true;
                         }
                         break;
                     case "COMPUTE_CL_TREE":
-                        if(value.equals("false"))
-                        {
+                        if (value.equals("false")) {
                             Constants.COMPUTE_CL_TREE = false;
-                        }
-                        else
-                        {
+                        } else {
                             Constants.COMPUTE_CL_TREE = true;
                         }
                         break;
                     case "SHOW_OUTPUT":
-                        if(value.equals("false"))
-                        {
+                        if (value.equals("false")) {
                             Constants.SHOW_OUTPUT = false;
-                        }
-                        else
-                        {
+                        } else {
                             Constants.SHOW_OUTPUT = true;
                         }
                         break;
                     case "DEBUG_MODE":
-                        if(value.equals("false"))
-                        {
+                        if (value.equals("false")) {
                             Constants.DEBUG_MODE = false;
-                        }
-                        else
-                        {
+                        } else {
                             Constants.DEBUG_MODE = true;
                         }
                         break;
@@ -260,8 +250,10 @@ public class Main {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         authors = new Author[Constants.MAX_AUTH_ID + 1];
-        numVertices = Constants.MAX_AUTH_ID - Constants.MIN_AUTH_ID+1;
+        numVertices = Constants.MAX_AUTH_ID - Constants.MIN_AUTH_ID + 1;
+
         /*
         System.out.println(Constants.INPUT_DIR);
         System.out.println(Constants.MIN_AUTH_ID);
@@ -276,8 +268,7 @@ public class Main {
         System.out.println(Constants.SHOW_OUTPUT);
         System.out.println(Constants.DEBUG_MODE);
         System.out.println(Constants.RUNS);
-        */
-                
+         */
         if (Constants.LOAD_GRAPH) {
             //Compute graph from raw files
             loadGraph();
@@ -315,67 +306,137 @@ public class Main {
             GlobalInvertedList.loadFromFile();
         }
 
-        //Scanner input = new Scanner(System.in);
-        int n = 0;
-        ArrayList<String> queryTerms = new ArrayList<String>();
-        /*
-        System.out.println("Number of terms: ");
-
-        try {
-            n = Integer.parseInt(input.nextLine());
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        
-        for (int i = 0; i < n; i++) {
-            System.out.println("Term " + i + " : ");
-            queryTerms.add(input.nextLine());
-            System.out.println(queryTerms.get(i));
-        }
-         */
-
         long startTime, endTime, totalTime;
         int runs = Constants.RUNS;
 
         CLTree.buildTree();
         CLTree.loadInvertedList();
         maxK = CLTree.root.getkMax();
-        
-        queryTerms.add("machine learning");
-        queryTerms.add("information retrieval");
-        int queryType = Constants.OR_PREDICATE;
 
-        Query query = new Query(queryTerms, queryType);
-        KICQ augmentedQuery = new KICQ(query);
-         
         startTime = System.nanoTime();
-        for(int run=0;run<runs;run++)
-        {
-            BasicExplore solve2 = new BasicExplore(augmentedQuery);
+        //double totalDensity = 0.0;
+        //double CC = 0.0;
+        
+        //int instances = 0;
+        
+        for (int i = 0; i < 100; i++) {
+            BasicExplore solve2 = null;
+            
+            for (int run = 0; run < runs; run++) {
+                solve2 = new BasicExplore(autoQuery.queries[0][i]);
+            }
+
+            /*
+            for (int r = 0; r < KICQ.r; r++) {
+                Community c = solve2.Q.remove();
+                //Community cq = new Community(c.getvSet(), c.getScore(), c.getK(), solve2.qeg);
+                double t=c.density();
+                //System.out.println(cq.getK());
+                if(t>0.0)
+                {
+                    totalDensity+=t;
+                    CC+=c.clusteringCoeff();
+                    instances++;
+                }
+            }
+            */
         }
+
         endTime = System.nanoTime();
-        totalTime = (endTime - startTime)/(1000000);
-        System.out.println("BASIC: "+((double)totalTime)/runs+" ms");
+        //System.out.println("Density: " + ((double) totalDensity) / instances);
+        //System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("OR Query>>");
+        System.out.println("BASIC: " + ((double) totalTime) / (runs * 100) + " ms");
+        
         
         startTime = System.nanoTime();
-        for(int run=0;run<runs;run++)
-        {
-            PruneAndExplore solve = new PruneAndExplore(augmentedQuery);
+        for (int i = 0; i < 100; i++) {
+            for (int run = 0; run < runs; run++) {
+                PruneAndExplore solve = new PruneAndExplore(autoQuery.queries[0][i]);
+            }
+        }
+
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("PRUNE: " + ((double) totalTime) / (runs * 100) + " ms");
+
+        startTime = System.nanoTime();
+        int totalAccess = 0;
+        for (int i = 0; i < 100; i++) {
+            for (int run = 0; run < runs; run++) {
+                TreeExplore.nodesAccessed = 0;
+                TreeExplore solve = new TreeExplore(autoQuery.queries[0][i]);
+            }
+            totalAccess += TreeExplore.nodesAccessed;
         }
         endTime = System.nanoTime();
-        totalTime = (endTime - startTime)/(1000000);
-        System.out.println("PRUNE: "+((double)totalTime)/runs+" ms");
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("TREE: " + ((double) totalTime) / (runs * 100) + " ms");
+        System.out.println("Nodes Accessed: " + ((double) totalAccess) / (100));
         
         
         startTime = System.nanoTime();
-        for(int run=0;run<runs;run++)
-        {
-            TreeExplore.nodesAccessed = 0;
-            TreeExplore solve = new TreeExplore(augmentedQuery);
+        //double totalDensity = 0.0;
+        //double CC = 0.0;
+        
+        //int instances = 0;
+        
+        for (int i = 0; i < 100; i++) {
+            BasicExplore solve2 = null;
+            
+            for (int run = 0; run < runs; run++) {
+                solve2 = new BasicExplore(autoQuery.queries[1][i]);
+            }
+
+            /*
+            for (int r = 0; r < KICQ.r; r++) {
+                Community c = solve2.Q.remove();
+                //Community cq = new Community(c.getvSet(), c.getScore(), c.getK(), solve2.qeg);
+                double t=c.density();
+                //System.out.println(cq.getK());
+                if(t>0.0)
+                {
+                    totalDensity+=t;
+                    CC+=c.clusteringCoeff();
+                    instances++;
+                }
+            }
+            */
+        }
+
+        endTime = System.nanoTime();
+        //System.out.println("Density: " + ((double) totalDensity) / instances);
+        //System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("AND Query >>");
+        System.out.println("BASIC: " + ((double) totalTime) / (runs * 100) + " ms");
+        
+        
+        startTime = System.nanoTime();
+        for (int i = 0; i < 100; i++) {
+            for (int run = 0; run < runs; run++) {
+                PruneAndExplore solve = new PruneAndExplore(autoQuery.queries[1][i]);
+            }
+        }
+
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("PRUNE: " + ((double) totalTime) / (runs * 100) + " ms");
+
+        startTime = System.nanoTime();
+        totalAccess = 0;
+        for (int i = 0; i < 100; i++) {
+            for (int run = 0; run < runs; run++) {
+                TreeExplore.nodesAccessed = 0;
+                TreeExplore solve = new TreeExplore(autoQuery.queries[1][i]);
+            }
+            totalAccess += TreeExplore.nodesAccessed;
         }
         endTime = System.nanoTime();
-        totalTime = (endTime - startTime)/(1000000);
-        System.out.println("TREE: "+((double)totalTime)/runs+" ms");
-        System.out.println("Nodes Accessed: "+TreeExplore.nodesAccessed);
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("TREE: " + ((double) totalTime) / (runs * 100) + " ms");
+
+        System.out.println("Nodes Accessed: " + ((double) totalAccess)/(100));
     }
 }

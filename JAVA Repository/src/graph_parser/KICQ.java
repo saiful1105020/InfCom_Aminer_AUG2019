@@ -27,6 +27,13 @@ public class KICQ {
     int n;
     ArrayList<Integer>[] keywords = null;
 
+    public KICQ(ArrayList<Integer>[] keywords, int predicate)
+    {
+        this.keywords = keywords;
+        this.n = keywords.length;
+        this.predicate = predicate;
+    }
+    
     public KICQ(Query query) {
         this.query = query;
         this.predicate = query.predicate;
@@ -54,15 +61,14 @@ public class KICQ {
 
     @Override
     public String toString() {
-        String keywordStr = "[";
+        String keywordStr = "";
         
         for(int i=0;i<n;i++)
         {
-            keywordStr+=keywords[i];
+            keywordStr+=keywords[i]+";";
         }
         
-        keywordStr+="]";
-        return "KICQ{" + "predicate=" + predicate + ", n=" + n + ", keywords=" + keywordStr + '}';
+        return n + "\n" + keywordStr;
     }
     
     

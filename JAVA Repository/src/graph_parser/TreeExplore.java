@@ -83,13 +83,35 @@ public class TreeExplore {
     }
 
     public Set<Integer> decompressVertices(TreeNode u) {
-        Set<Integer> testSet = new LinkedHashSet<>(u.vertexSet);
-        TreeNode iter = u;
-        while (iter.childNodes.size() != 0) {
-            for (TreeNode child : iter.childNodes) {
-                testSet.addAll(decompressVertices(child));
+        Set<Integer> testSet = new LinkedHashSet<>();
+        
+        int n = kicq.keywords.length;
+
+        for (int i = 0; i < n; i++) {
+            Set<Integer> termVertices = new HashSet<Integer>();
+            for (int j = 0; j < kicq.keywords[i].size(); j++) {
+                int keywordId = kicq.keywords[i].get(j);
+                if (u.iList.containsKey(keywordId)) {
+                    Set<Integer> keywordVertices = u.iList.get(keywordId).getRelVertices();
+                    termVertices.addAll(keywordVertices);
+                }
+            }
+
+            if (kicq.predicate == Constants.OR_PREDICATE) {
+                testSet.addAll(termVertices);
+            } else {
+                if (i == 0) {
+                    testSet = new LinkedHashSet<Integer>(termVertices);
+                } else {
+                    testSet.retainAll(termVertices);
+                }
             }
         }
+        
+        for (TreeNode child : u.childNodes) {
+            testSet.addAll(decompressVertices(child));
+        }
+        
         return testSet;
     }
 
@@ -110,8 +132,10 @@ public class TreeExplore {
 
         double rTopScore = this.Q.peek().getScore();
 
+        
         int n = kicq.keywords.length;
 
+        
         for (int i = 0; i < n; i++) {
             Set<Integer> termVertices = new HashSet<Integer>();
             for (int j = 0; j < kicq.keywords[i].size(); j++) {
@@ -123,29 +147,28 @@ public class TreeExplore {
             }
 
             if (kicq.predicate == Constants.OR_PREDICATE) {
-                u.fullVertexSet.addAll(termVertices);
+                u.exclusiveVertexSet.addAll(termVertices);
             } else {
                 if (i == 0) {
-                    u.fullVertexSet = new LinkedHashSet<Integer>(termVertices);
+                    u.exclusiveVertexSet = new LinkedHashSet<Integer>(termVertices);
                 } else {
-                    u.fullVertexSet.retainAll(termVertices);
+                    u.exclusiveVertexSet.retainAll(termVertices);
                 }
             }
         }
 
-        Set<Integer> nodeExclusiveVertexSet = new LinkedHashSet<Integer>(u.fullVertexSet);
         
         if (maxDesScore > rTopScore) {
             for (TreeNode v : u.childNodes) {
                 if (relevantTreeNodes.contains(v.getTreeNodeId())) {
                     visitTree(v);
-                    u.fullVertexSet.addAll(v.fullVertexSet);
-                    v.fullVertexSet.clear();
+                    //u.fullVertexSet.addAll(v.fullVertexSet);
+                    v.exclusiveVertexSet.clear();
                 }
             }
         }
         
-        if(nodeExclusiveVertexSet.size()==0)
+        if(u.exclusiveVertexSet.size()==0)
         {
             return;
         }
@@ -159,7 +182,7 @@ public class TreeExplore {
         if (u.getCohesionFactor() >= KICQ.k_min && maxNodeScore > rTopScore) {
             nodesAccessed++;
 
-            QEG localQeg = new QEG(kicq, new LinkedHashSet(u.fullVertexSet));
+            QEG localQeg = new QEG(kicq, new LinkedHashSet(decompressVertices(u)));
 
             //DEBUG CODE FOR A PARTICULAR TREE NODE
             /*
@@ -174,7 +197,7 @@ public class TreeExplore {
             int k_max = u.getCohesionFactor();
             
             int localMaxDegree = 0;
-            for(int v:nodeExclusiveVertexSet)
+            for(int v:u.exclusiveVertexSet)
             {
                 if(localQeg.vertexDegree.containsKey(v))
                 {
@@ -193,11 +216,6 @@ public class TreeExplore {
             if (localQeg.V.size() != 0) {
                 ModifiedPruneExplore solve = new ModifiedPruneExplore(localQeg, k_max, Q);
             }
-            /*
-            if (u.getTreeNodeId() == 13) {
-                Constants.SPECIAL_REGION_PRINT = false;
-            }
-             */
         }
         return;
     }

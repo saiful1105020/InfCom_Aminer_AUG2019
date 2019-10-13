@@ -1,0 +1,129 @@
+OR - beta = 0.90
+Number of nodes: 50000
+Number of edges: 244341
+BASIC: 1049.1 ms
+PRUNE: 913.1 ms
+TREE: 338.06 ms
+Nodes Accessed: 20
+
+AND - beta = 0.90
+BASIC: 758.57 ms
+PRUNE: 604.0 ms
+TREE: 198.57 ms
+Nodes Accessed: 13
+
+AND - beta = 0.05
+BASIC: 644.11 ms
+PRUNE: 161.21 ms
+TREE: 6817.94 ms
+Nodes Accessed: 83
+
+AND - beta = 0.10
+BASIC: 794.86 ms
+PRUNE: 231.78 ms
+TREE: 4313.33 ms
+Nodes Accessed: 79
+
+AND - beta = 0.15
+BASIC: 686.52 ms
+PRUNE: 280.49 ms
+TREE: 2715.54 ms
+Nodes Accessed: 79
+
+AND - beta = 0.20
+BASIC: 669.23 ms
+PRUNE: 385.49 ms
+TREE: 1959.98 ms
+Nodes Accessed: 79
+
+AND - beta = 0.25
+BASIC: 639.82 ms
+PRUNE: 375.08 ms
+TREE: 1585.63 ms
+Nodes Accessed: 79
+
+AND - beta = 0.30
+BASIC: 638.45 ms
+PRUNE: 413.65 ms
+TREE: 1318.91 ms
+Nodes Accessed: 52
+
+AND - beta = 0.35
+BASIC: 646.07 ms
+PRUNE: 442.12 ms
+TREE: 1156.78 ms
+Nodes Accessed: 38
+
+AND - beta = 0.40
+BASIC: 639.97 ms
+PRUNE: 461.58 ms
+TREE: 983.0 ms
+Nodes Accessed: 31
+
+AND - beta = 0.45
+BASIC: 656.78 ms
+PRUNE: 489.47 ms
+TREE: 854.1 ms
+Nodes Accessed: 26
+
+AND - beta = 0.50
+BASIC: 639.34 ms
+PRUNE: 509.52 ms
+TREE: 720.59 ms
+Nodes Accessed: 22
+
+AND - beta = 0.55
+BASIC: 639.1 ms
+PRUNE: 530.22 ms
+TREE: 621.82 ms
+Nodes Accessed: 18
+
+AND - beta = 0.60
+BASIC: 643.17 ms
+PRUNE: 557.88 ms
+TREE: 553.8 ms
+Nodes Accessed: 17
+
+AND - beta = 0.65
+BASIC: 643.52 ms
+PRUNE: 560.99 ms
+TREE: 468.0 ms
+Nodes Accessed: 16
+
+AND - beta = 0.70
+BASIC: 650.0 ms
+PRUNE: 581.39 ms
+TREE: 386.36 ms
+Nodes Accessed: 15
+
+0.75
+BASIC: 631.76 ms
+PRUNE: 587.11 ms
+TREE: 309.99 ms
+Nodes Accessed: 15
+
+0.80
+BASIC: 650.96 ms
+PRUNE: 593.53 ms
+TREE: 271.5 ms
+Nodes Accessed: 14
+
+0.85
+BASIC: 640.85 ms
+PRUNE: 603.74 ms
+TREE: 227.42 ms
+Nodes Accessed: 14
+
+With beta = 0.8, with random queries
+Number of nodes: 50000
+Number of edges: 244341
+OR Query>>
+BASIC: 959.18 ms
+PRUNE: 920.39 ms
+TREE: 414.33 ms
+Nodes Accessed: 17.65
+AND Query >>
+BASIC: 503.89 ms
+PRUNE: 493.78 ms
+TREE: 294.2 ms
+Nodes Accessed: 15.95

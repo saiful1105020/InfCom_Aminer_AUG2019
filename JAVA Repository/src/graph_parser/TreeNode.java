@@ -39,7 +39,7 @@ public class TreeNode {
     //computed first, updated later from child
     Set<Integer> vertexSet = new LinkedHashSet<>();
 
-    Set<Integer> fullVertexSet = new LinkedHashSet<>();
+    Set<Integer> exclusiveVertexSet = new LinkedHashSet<>();
 
     ArrayList<TreeNode> childNodes = new ArrayList<>();
 
@@ -80,7 +80,7 @@ public class TreeNode {
     public void preempt()
     {
         //this.childNodes stays the same
-        this.fullVertexSet.clear();
+        this.exclusiveVertexSet.clear();
         this.iList.clear();
         //this.parent stays the same
         this.vertexSet.clear();
