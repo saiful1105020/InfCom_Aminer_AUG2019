@@ -22,13 +22,13 @@ public class TreeExplore {
     KICQ kicq;
     static int nodesAccessed = 0;
     Set<Integer> relevantTreeNodes = new LinkedHashSet<Integer>();
-    //QEG qeg;
+    QEG qeg;
 
     PriorityQueue<Community> Q;
 
     public TreeExplore(KICQ kicq) {
         this.kicq = kicq;
-
+        //find relevant CL-tree nodes
         for (int i = 0; i < kicq.keywords.length; i++) {
             Set<Integer> termNodes = new LinkedHashSet<>();
             for (int j : kicq.keywords[i]) {
@@ -46,8 +46,6 @@ public class TreeExplore {
             }
         }
         
-        //System.out.println(relevantTreeNodes);
-
         Comparator<Community> CommunityComparator = new Comparator<Community>() {
             @Override
             public int compare(Community c1, Community c2) {
@@ -61,7 +59,9 @@ public class TreeExplore {
             }
         };
         this.Q = new PriorityQueue<Community>(KICQ.r, CommunityComparator);
-
+        
+        //query essential graph with core decomposition
+        this.qeg = new QEG(kicq);
         this.solve();
 
         if (Constants.SHOW_OUTPUT) {
@@ -79,44 +79,25 @@ public class TreeExplore {
             Community c = new Community();
             this.Q.add(c);
         }
+        //algorithm
         visitTree(CLTree.root);
     }
 
     public Set<Integer> decompressVertices(TreeNode u) {
-        Set<Integer> testSet = new LinkedHashSet<>();
-        
-        int n = kicq.keywords.length;
-
-        for (int i = 0; i < n; i++) {
-            Set<Integer> termVertices = new HashSet<Integer>();
-            for (int j = 0; j < kicq.keywords[i].size(); j++) {
-                int keywordId = kicq.keywords[i].get(j);
-                if (u.iList.containsKey(keywordId)) {
-                    Set<Integer> keywordVertices = u.iList.get(keywordId).getRelVertices();
-                    termVertices.addAll(keywordVertices);
-                }
-            }
-
-            if (kicq.predicate == Constants.OR_PREDICATE) {
-                testSet.addAll(termVertices);
-            } else {
-                if (i == 0) {
-                    testSet = new LinkedHashSet<Integer>(termVertices);
-                } else {
-                    testSet.retainAll(termVertices);
-                }
-            }
-        }
+        Set<Integer> testSet = new LinkedHashSet<>(u.vertexSet);
+        testSet.retainAll(qeg.V);
         
         for (TreeNode child : u.childNodes) {
-            testSet.addAll(decompressVertices(child));
+            if(relevantTreeNodes.contains(child))
+            {
+                testSet.addAll(decompressVertices(child));
+            }
         }
         
         return testSet;
     }
 
     public void visitTree(TreeNode u) {
-
         if (u.getCohesionFactor() < (Constants.K_MIN-1)) {
             for (TreeNode v : u.childNodes) {
                 if (relevantTreeNodes.contains(v.getTreeNodeId())) {
@@ -125,44 +106,19 @@ public class TreeExplore {
             }
             return;
         }
-        
         //Ensures k is at least (k_min - 1). So children are k_min cores
         
         double maxDesScore = maxDescendentScore(u);
-
-        double rTopScore = this.Q.peek().getScore();
-
+        double rTopScore = this.Q.peek().getScore();        
         
-        int n = kicq.keywords.length;
-
-        
-        for (int i = 0; i < n; i++) {
-            Set<Integer> termVertices = new HashSet<Integer>();
-            for (int j = 0; j < kicq.keywords[i].size(); j++) {
-                int keywordId = kicq.keywords[i].get(j);
-                if (u.iList.containsKey(keywordId)) {
-                    Set<Integer> keywordVertices = u.iList.get(keywordId).getRelVertices();
-                    termVertices.addAll(keywordVertices);
-                }
-            }
-
-            if (kicq.predicate == Constants.OR_PREDICATE) {
-                u.exclusiveVertexSet.addAll(termVertices);
-            } else {
-                if (i == 0) {
-                    u.exclusiveVertexSet = new LinkedHashSet<Integer>(termVertices);
-                } else {
-                    u.exclusiveVertexSet.retainAll(termVertices);
-                }
-            }
-        }
-
+        //Get query relevant vertices in this tree-node
+        u.exclusiveVertexSet = new LinkedHashSet<>(u.vertexSet);
+        u.exclusiveVertexSet.retainAll(qeg.V);
         
         if (maxDesScore > rTopScore) {
             for (TreeNode v : u.childNodes) {
                 if (relevantTreeNodes.contains(v.getTreeNodeId())) {
                     visitTree(v);
-                    //u.fullVertexSet.addAll(v.fullVertexSet);
                     v.exclusiveVertexSet.clear();
                 }
             }
@@ -174,47 +130,40 @@ public class TreeExplore {
         }
         
         //update max node score
-
         double maxNodeScore = maxNodeScore(u);
-
         rTopScore = this.Q.peek().getScore();
 
         if (u.getCohesionFactor() >= KICQ.k_min && maxNodeScore > rTopScore) {
             nodesAccessed++;
-
-            QEG localQeg = new QEG(kicq, new LinkedHashSet(decompressVertices(u)));
-
-            //DEBUG CODE FOR A PARTICULAR TREE NODE
-            /*
-            if (u.getTreeNodeId() == 13) {
-                System.out.println(u.getCohesionFactor());
-                System.out.println(u.fullVertexSet);
-                System.out.println(localQeg);
-                Constants.SPECIAL_REGION_PRINT = true;
-            }
-             */
-            
             int k_max = u.getCohesionFactor();
             
             int localMaxDegree = 0;
+            int localMinDegree = Integer.MAX_VALUE;
             for(int v:u.exclusiveVertexSet)
             {
-                if(localQeg.vertexDegree.containsKey(v))
+                if(qeg.vertexDegree.containsKey(v))
                 {
-                    int deg = localQeg.vertexDegree.get(v);
+                    int deg = qeg.vertexDegree.get(v);
                     if(localMaxDegree<deg)
                     {
                         localMaxDegree = deg;
                     }
+                    if(localMinDegree>deg)
+                    {
+                        localMinDegree = deg;
+                    }
                 }
             }
+            
             if(k_max>localMaxDegree)
             {
                 k_max = localMaxDegree;
             }
             
-            if (localQeg.V.size() != 0) {
-                ModifiedPruneExplore solve = new ModifiedPruneExplore(localQeg, k_max, Q);
+            int k_min = Math.max(localMinDegree, KICQ.k_min);
+            
+            if (qeg.V.size() != 0) {
+                ModifiedPruneExplore solve = new ModifiedPruneExplore(qeg, decompressVertices(u), k_min, k_max, Q);
             }
         }
         return;

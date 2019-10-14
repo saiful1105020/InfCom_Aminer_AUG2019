@@ -17,29 +17,38 @@ import java.util.Set;
 public class ModifiedPruneExplore {
 
     QEG qeg;
+    Set<Integer> vSet;
 
     double rTopScore;
     PriorityQueue<Community> Q;
 
-    public ModifiedPruneExplore(QEG qeg, int k_max, PriorityQueue<Community> Q) {
+    public ModifiedPruneExplore(QEG qeg, Set<Integer> vSet, int k_min, int k_max, PriorityQueue<Community> Q) {
         this.qeg = qeg;
         this.Q = Q;
+        this.vSet = vSet;
         rTopScore = Q.peek().getScore();
 
-        if (this.qeg.V.size() != 0) {
-            this.solve(this.qeg.V, KICQ.k_min, k_max);
+        if (vSet.size() != 0) {
+            this.solve(this.vSet, k_min, k_max);
         }
     }
 
     public void solve(Set<Integer> H, int k, int k_max) {
+        /*
         if (Constants.SPECIAL_REGION_PRINT) {
             System.out.println("Starting k: " + k);
         }
 
-        int minDegree = Integer.MAX_VALUE;
+        int minDegree = k;
         int maxDegree = Integer.MIN_VALUE;
+        
         for (int vId : H) {
-            int deg = qeg.vertexDegree.get(vId);
+            int deg=0;
+            if(qeg.vertexDegree.containsKey(vId))
+            {
+                deg= qeg.vertexDegree.get(vId);
+            }
+            //System.out.println(deg);
             if (deg > maxDegree) {
                 maxDegree = deg;
             }
@@ -49,13 +58,20 @@ public class ModifiedPruneExplore {
         }
 
         if (minDegree > k) {
+            System.out.println("Min Degree improved");
             k = minDegree;
+        }
+        
+        //test code
+        if(maxDegree!=k_max)
+        {
+            System.out.println("Max Degree improved");
         }
 
         if (Constants.SPECIAL_REGION_PRINT) {
             System.out.println("Updated k: " + k);
         }
-
+        */
         Set<Integer> Vk = this.qeg.findMaxCore(H, k);
 
         if (Constants.SPECIAL_REGION_PRINT) {
@@ -75,19 +91,8 @@ public class ModifiedPruneExplore {
             double score = this.qeg.score(componentNodes, k);
 
             if (score > rTopScore) {
-                /**
-                 * For debugging
-                 */
-                //System.out.println("Before inserting new community");
-                /*
-                for (Community c : Q) {
-                    System.out.println("k = " + c.getK());
-                    System.out.println(c.getvSet());
-                    System.out.println("score = " + c.getScore());
-                }
-                */
+                
                 Community candidate = new Community(componentNodes, score, k);
-
                 boolean containedInQueue = false;
                 ArrayList<Community> contained = new ArrayList<Community>();
 
@@ -134,17 +139,8 @@ public class ModifiedPruneExplore {
                         Community empty = new Community();
                         Q.add(empty);
                     }
-                    //System.out.println("FILLED UP Q WITH EMPTY "+additional);
                 }
 
-                /*
-                System.out.println("After inserting new community");
-                for (Community c : Q) {
-                    System.out.println("k = " + c.getK());
-                    System.out.println(c.getvSet());
-                    System.out.println("score = " + c.getScore());
-                }
-                */
                 rTopScore = this.Q.peek().getScore();
             }
 
