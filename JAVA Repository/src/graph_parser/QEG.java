@@ -276,7 +276,7 @@ public class QEG {
         Set<Integer> Vk = new LinkedHashSet<Integer>();
 
         for (int nodeId : subQEGNodes) {
-            if (vertexDegree.containsKey(nodeId) && vertexDegree.get(nodeId) >= k) {
+            if (vertexDegree.get(nodeId) >= k) {
                 Vk.add(nodeId);
             }
         }
