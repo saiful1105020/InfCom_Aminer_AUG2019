@@ -125,17 +125,12 @@ public class TreeExplore {
             }
             return;
         }
-        
         //Ensures k is at least (k_min - 1). So children are k_min cores
         
         double maxDesScore = maxDescendentScore(u);
-
         double rTopScore = this.Q.peek().getScore();
 
-        
-        int n = kicq.keywords.length;
-
-        
+        int n = kicq.keywords.length;        
         for (int i = 0; i < n; i++) {
             Set<Integer> termVertices = new HashSet<Integer>();
             for (int j = 0; j < kicq.keywords[i].size(); j++) {
@@ -181,22 +176,12 @@ public class TreeExplore {
 
         if (u.getCohesionFactor() >= KICQ.k_min && maxNodeScore > rTopScore) {
             nodesAccessed++;
-
             QEG localQeg = new QEG(kicq, new LinkedHashSet(decompressVertices(u)));
 
-            //DEBUG CODE FOR A PARTICULAR TREE NODE
-            /*
-            if (u.getTreeNodeId() == 13) {
-                System.out.println(u.getCohesionFactor());
-                System.out.println(u.fullVertexSet);
-                System.out.println(localQeg);
-                Constants.SPECIAL_REGION_PRINT = true;
-            }
-             */
-            
             int k_max = u.getCohesionFactor();
             
             int localMaxDegree = 0;
+            int localMinDegree = Integer.MAX_VALUE;
             for(int v:u.exclusiveVertexSet)
             {
                 if(localQeg.vertexDegree.containsKey(v))
@@ -206,15 +191,20 @@ public class TreeExplore {
                     {
                         localMaxDegree = deg;
                     }
+                    if(localMinDegree>deg)
+                    {
+                        localMinDegree = deg;
+                    }
                 }
             }
             if(k_max>localMaxDegree)
             {
                 k_max = localMaxDegree;
             }
+            int k_min = Math.max(localMinDegree, KICQ.k_min);
             
             if (localQeg.V.size() != 0) {
-                ModifiedPruneExplore solve = new ModifiedPruneExplore(localQeg, k_max, Q);
+                ModifiedPruneExplore solve = new ModifiedPruneExplore(localQeg, k_min, k_max, Q);
             }
         }
         return;

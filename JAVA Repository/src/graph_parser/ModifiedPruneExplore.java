@@ -21,17 +21,18 @@ public class ModifiedPruneExplore {
     double rTopScore;
     PriorityQueue<Community> Q;
 
-    public ModifiedPruneExplore(QEG qeg, int k_max, PriorityQueue<Community> Q) {
+    public ModifiedPruneExplore(QEG qeg, int k_min, int k_max, PriorityQueue<Community> Q) {
         this.qeg = qeg;
         this.Q = Q;
         rTopScore = Q.peek().getScore();
 
         if (this.qeg.V.size() != 0) {
-            this.solve(this.qeg.V, KICQ.k_min, k_max);
+            this.solve(this.qeg.V, k_min, k_max);
         }
     }
 
     public void solve(Set<Integer> H, int k, int k_max) {
+        /*
         if (Constants.SPECIAL_REGION_PRINT) {
             System.out.println("Starting k: " + k);
         }
@@ -55,7 +56,8 @@ public class ModifiedPruneExplore {
         if (Constants.SPECIAL_REGION_PRINT) {
             System.out.println("Updated k: " + k);
         }
-
+        */
+        
         Set<Integer> Vk = this.qeg.findMaxCore(H, k);
 
         if (Constants.SPECIAL_REGION_PRINT) {

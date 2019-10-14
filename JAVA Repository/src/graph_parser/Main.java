@@ -250,6 +250,9 @@ public class Main {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        KICQ.k_min = Constants.K_MIN;
+        KICQ.r = Constants.TOP_R;
 
         authors = new Author[Constants.MAX_AUTH_ID + 1];
         numVertices = Constants.MAX_AUTH_ID - Constants.MIN_AUTH_ID + 1;
@@ -318,8 +321,8 @@ public class Main {
         //double CC = 0.0;
         
         //int instances = 0;
-        
-        for (int i = 0; i < 100; i++) {
+        int numQueries = 100;
+        for (int i = 0; i < numQueries; i++) {
             BasicExplore solve2 = null;
             
             for (int run = 0; run < runs; run++) {
@@ -347,11 +350,11 @@ public class Main {
         //System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("OR Query>>");
-        System.out.println("BASIC: " + ((double) totalTime) / (runs * 100) + " ms");
+        System.out.println("BASIC: " + ((double) totalTime) / (runs * numQueries) + " ms");
         
         
         startTime = System.nanoTime();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < numQueries; i++) {
             for (int run = 0; run < runs; run++) {
                 PruneAndExplore solve = new PruneAndExplore(autoQuery.queries[0][i]);
             }
@@ -359,11 +362,11 @@ public class Main {
 
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
-        System.out.println("PRUNE: " + ((double) totalTime) / (runs * 100) + " ms");
+        System.out.println("PRUNE: " + ((double) totalTime) / (runs * numQueries) + " ms");
 
         startTime = System.nanoTime();
         int totalAccess = 0;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < numQueries; i++) {
             for (int run = 0; run < runs; run++) {
                 TreeExplore.nodesAccessed = 0;
                 TreeExplore solve = new TreeExplore(autoQuery.queries[0][i]);
@@ -372,8 +375,8 @@ public class Main {
         }
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
-        System.out.println("TREE: " + ((double) totalTime) / (runs * 100) + " ms");
-        System.out.println("Nodes Accessed: " + ((double) totalAccess) / (100));
+        System.out.println("TREE: " + ((double) totalTime) / (runs * numQueries) + " ms");
+        System.out.println("Nodes Accessed: " + ((double) totalAccess) / (numQueries));
         
         
         startTime = System.nanoTime();
@@ -382,7 +385,7 @@ public class Main {
         
         //int instances = 0;
         
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < numQueries; i++) {
             BasicExplore solve2 = null;
             
             for (int run = 0; run < runs; run++) {
@@ -410,11 +413,11 @@ public class Main {
         //System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("AND Query >>");
-        System.out.println("BASIC: " + ((double) totalTime) / (runs * 100) + " ms");
+        System.out.println("BASIC: " + ((double) totalTime) / (runs * numQueries) + " ms");
         
         
         startTime = System.nanoTime();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < numQueries; i++) {
             for (int run = 0; run < runs; run++) {
                 PruneAndExplore solve = new PruneAndExplore(autoQuery.queries[1][i]);
             }
@@ -422,11 +425,11 @@ public class Main {
 
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
-        System.out.println("PRUNE: " + ((double) totalTime) / (runs * 100) + " ms");
+        System.out.println("PRUNE: " + ((double) totalTime) / (runs * numQueries) + " ms");
 
         startTime = System.nanoTime();
         totalAccess = 0;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < numQueries; i++) {
             for (int run = 0; run < runs; run++) {
                 TreeExplore.nodesAccessed = 0;
                 TreeExplore solve = new TreeExplore(autoQuery.queries[1][i]);
@@ -435,8 +438,8 @@ public class Main {
         }
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
-        System.out.println("TREE: " + ((double) totalTime) / (runs * 100) + " ms");
+        System.out.println("TREE: " + ((double) totalTime) / (runs * numQueries) + " ms");
 
-        System.out.println("Nodes Accessed: " + ((double) totalAccess)/(100));
+        System.out.println("Nodes Accessed: " + ((double) totalAccess)/(numQueries));
     }
 }
