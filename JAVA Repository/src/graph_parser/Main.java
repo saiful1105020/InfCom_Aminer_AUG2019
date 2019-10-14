@@ -254,6 +254,7 @@ public class Main {
         KICQ.k_min = Constants.K_MIN;
         KICQ.r = Constants.TOP_R;
 
+        
         authors = new Author[Constants.MAX_AUTH_ID + 1];
         numVertices = Constants.MAX_AUTH_ID - Constants.MIN_AUTH_ID + 1;
 
@@ -311,7 +312,10 @@ public class Main {
 
         long startTime, endTime, totalTime;
         int runs = Constants.RUNS;
-
+        
+        KICQ.k_min = Constants.K_MIN;
+        KICQ.r = Constants.TOP_R;
+        
         CLTree.buildTree();
         CLTree.loadInvertedList();
         maxK = CLTree.root.getkMax();

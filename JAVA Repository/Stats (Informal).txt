@@ -118,12 +118,12 @@ With beta = 0.8, with random queries
 Number of nodes: 50000
 Number of edges: 244341
 OR Query>>
-BASIC: 959.18 ms
-PRUNE: 920.39 ms
-TREE: 414.33 ms
+BASIC: 713.622 ms
+PRUNE: 625.253 ms
+TREE: 275.994 ms
 Nodes Accessed: 17.65
 AND Query >>
-BASIC: 503.89 ms
-PRUNE: 493.78 ms
-TREE: 294.2 ms
+BASIC: 343.502 ms
+PRUNE: 327.384 ms
+TREE: 172.699 ms
 Nodes Accessed: 15.95
