@@ -250,11 +250,10 @@ public class Main {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         KICQ.k_min = Constants.K_MIN;
         KICQ.r = Constants.TOP_R;
 
-        
         authors = new Author[Constants.MAX_AUTH_ID + 1];
         numVertices = Constants.MAX_AUTH_ID - Constants.MIN_AUTH_ID + 1;
 
@@ -312,51 +311,58 @@ public class Main {
 
         long startTime, endTime, totalTime;
         int runs = Constants.RUNS;
-        
-        KICQ.k_min = Constants.K_MIN;
-        KICQ.r = Constants.TOP_R;
-        
+
         CLTree.buildTree();
         CLTree.loadInvertedList();
         maxK = CLTree.root.getkMax();
 
         startTime = System.nanoTime();
-        //double totalDensity = 0.0;
-        //double CC = 0.0;
-        
-        //int instances = 0;
+        double totalDensity = 0.0;
+        double totalDiameter = 0.0;
+        double CC = 0.0;
+        double totalComDegree = 0.0;
+        int instances = 0;
         int numQueries = 100;
+        
+        if (Constants.SHOW_OUTPUT == true) {
+            System.err.println("OUTPUT MUST BE DISABLED TO EVALUATE COMMUNITIES");
+            System.exit(0);
+        }
+        
         for (int i = 0; i < numQueries; i++) {
             BasicExplore solve2 = null;
-            
+
             for (int run = 0; run < runs; run++) {
                 solve2 = new BasicExplore(autoQuery.queries[0][i]);
             }
 
-            /*
             for (int r = 0; r < KICQ.r; r++) {
                 Community c = solve2.Q.remove();
-                //Community cq = new Community(c.getvSet(), c.getScore(), c.getK(), solve2.qeg);
-                double t=c.density();
-                //System.out.println(cq.getK());
-                if(t>0.0)
-                {
-                    totalDensity+=t;
-                    CC+=c.clusteringCoeff();
+                double t = c.density();
+                if (t > 0.0) {
+                    double cc = c.clusteringCoeff();
+                    double cd = c.degree();
+                    double dm = c.diameter();
+                    totalDensity += t;
+                    totalDiameter+=dm;
+                    CC += cc;
+                    totalComDegree+=cd;
                     instances++;
                 }
             }
-            */
+
         }
 
         endTime = System.nanoTime();
-        //System.out.println("Density: " + ((double) totalDensity) / instances);
-        //System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("OR Query>>");
         System.out.println("BASIC: " + ((double) totalTime) / (runs * numQueries) + " ms");
+        System.out.println("Degree: " + ((double) totalComDegree) / instances);
+        System.out.println("Diameter: " + ((double) totalDiameter) / instances);
+        System.out.println("Density: " + ((double) totalDensity) / instances);
+        System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
         
-        
+
         startTime = System.nanoTime();
         for (int i = 0; i < numQueries; i++) {
             for (int run = 0; run < runs; run++) {
@@ -381,45 +387,45 @@ public class Main {
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("TREE: " + ((double) totalTime) / (runs * numQueries) + " ms");
         System.out.println("Nodes Accessed: " + ((double) totalAccess) / (numQueries));
-        
-        
+
         startTime = System.nanoTime();
-        //double totalDensity = 0.0;
-        //double CC = 0.0;
-        
-        //int instances = 0;
-        
+        totalComDegree = 0.0;
+        totalDiameter = 0.0;
+        totalDensity = 0.0;
+        CC = 0.0;
+        instances = 0;
         for (int i = 0; i < numQueries; i++) {
             BasicExplore solve2 = null;
-            
+
             for (int run = 0; run < runs; run++) {
                 solve2 = new BasicExplore(autoQuery.queries[1][i]);
             }
 
-            /*
             for (int r = 0; r < KICQ.r; r++) {
                 Community c = solve2.Q.remove();
-                //Community cq = new Community(c.getvSet(), c.getScore(), c.getK(), solve2.qeg);
-                double t=c.density();
-                //System.out.println(cq.getK());
-                if(t>0.0)
-                {
-                    totalDensity+=t;
-                    CC+=c.clusteringCoeff();
+                double t = c.density();
+                if (t > 0.0) {
+                    double cc = c.clusteringCoeff();
+                    double cd = c.degree();
+                    double dm = c.diameter();
+                    totalDensity += t;
+                    totalDiameter+=dm;
+                    CC += cc;
+                    totalComDegree+=cd;
                     instances++;
                 }
             }
-            */
         }
 
         endTime = System.nanoTime();
-        //System.out.println("Density: " + ((double) totalDensity) / instances);
-        //System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("AND Query >>");
         System.out.println("BASIC: " + ((double) totalTime) / (runs * numQueries) + " ms");
-        
-        
+        System.out.println("Degree: " + ((double) totalComDegree) / instances);
+        System.out.println("Diameter: " + ((double) totalDiameter) / instances);
+        System.out.println("Density: " + ((double) totalDensity) / instances);
+        System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
+
         startTime = System.nanoTime();
         for (int i = 0; i < numQueries; i++) {
             for (int run = 0; run < runs; run++) {
@@ -444,6 +450,6 @@ public class Main {
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("TREE: " + ((double) totalTime) / (runs * numQueries) + " ms");
 
-        System.out.println("Nodes Accessed: " + ((double) totalAccess)/(numQueries));
+        System.out.println("Nodes Accessed: " + ((double) totalAccess) / (numQueries));
     }
 }

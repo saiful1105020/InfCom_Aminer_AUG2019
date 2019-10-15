@@ -1,0 +1,22 @@
+Number of nodes: 50000
+Number of edges: 244341
+
+OR Query>>
+Degree: 96.70471003614296
+Diameter: 2.01
+Density: 0.7025578169638974
+Clustering Coefficient: 0.7444731557570575
+
+BASIC: 3371.33 ms
+PRUNE: 678.74 ms
+TREE: 182.82 ms
+
+AND Query >>
+Degree: 91.4381373084997
+Diameter: 2.01
+Density: 0.7098977049610269
+Clustering Coefficient: 0.7502588843332585
+
+BASIC: 1658.23 ms
+PRUNE: 329.62 ms
+TREE: 98.49 ms
