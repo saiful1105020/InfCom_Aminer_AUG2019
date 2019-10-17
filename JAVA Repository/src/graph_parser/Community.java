@@ -110,17 +110,29 @@ public class Community {
             adjList.put(v,adj);
         }
 
+<<<<<<< HEAD
         ArrayList<Integer> heavyHeaterVertices = new ArrayList<>();
+=======
+        ArrayList<Integer> heavyHitterVertices = new ArrayList<>();
+>>>>>>> Quality Measures for Varying Beta Values
         // vertex v is a heavy-hitter iff degree(v) >= sqrtV
         for (int v : this.vSet) {
             int d = vertexDegree.get(v);
             if (d >= sqrtV) {
+<<<<<<< HEAD
                 heavyHeaterVertices.add(v);
+=======
+                heavyHitterVertices.add(v);
+>>>>>>> Quality Measures for Varying Beta Values
             }
         }
 
         // count the number of triangles formed from only heavy-hitter vertices
+<<<<<<< HEAD
         numberTriangles = getNumberOfTrianglesNaive(heavyHeaterVertices);
+=======
+        numberTriangles = getNumberOfTrianglesNaive(heavyHitterVertices);
+>>>>>>> Quality Measures for Varying Beta Values
 
         for (int v1 : this.vSet) {
             for (int v2 : adjList.get(v1)) {
@@ -226,6 +238,19 @@ public class Community {
         return (d/this.vSet.size());
     }
     
+<<<<<<< HEAD
+=======
+    public double avgInfScore(QEG qeg)
+    {
+        double totalScore = 0;
+        for(int u:this.vSet)
+        {
+            totalScore+=qeg.idNodeMap.get(u).score;
+        }
+        return totalScore/this.vSet.size();
+    }
+    
+>>>>>>> Quality Measures for Varying Beta Values
     //cohesiveness measure
     public double diameter()
     {
@@ -241,6 +266,12 @@ public class Community {
         return dm;
     }
     
+<<<<<<< HEAD
+=======
+    /*
+    Considering simple undirected graph (without edge weight)
+    */
+>>>>>>> Quality Measures for Varying Beta Values
     public double shortestPath(int source, int dest)
     {
         if(source==dest) return 0;

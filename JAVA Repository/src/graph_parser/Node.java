@@ -18,6 +18,12 @@ public class Node {
     Set<Integer> adjList = new LinkedHashSet<Integer>();
     double score;
 
+    public Node (Node node)
+    {
+        this.id = node.id;
+        this.adjList = new LinkedHashSet<>(node.adjList);
+        this.score = node.score;
+    }
     public Node(int id, KICQ kicq) {
         this.id = id;
         this.adjList = new LinkedHashSet<Integer>(Main.authors[id].getCoAuthorPaperCounts().keySet());
