@@ -12,10 +12,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
@@ -308,7 +306,6 @@ public class Main {
         double totalDiameter = 0.0;
         double CC = 0.0;
         double totalComDegree = 0.0;
-<<<<<<< HEAD
         int instances = 0;
         int numQueries = 100;
         
@@ -319,13 +316,13 @@ public class Main {
         
         for (int i = 0; i < numQueries; i++) {
             BasicExplore solve2 = null;
-
             for (int run = 0; run < runs; run++) {
                 solve2 = new BasicExplore(autoQuery.queries[0][i]);
             }
 
             for (int r = 0; r < KICQ.r; r++) {
                 Community c = solve2.Q.remove();
+                
                 double t = c.density();
                 if (t > 0.0) {
                     double cc = c.clusteringCoeff();
@@ -337,14 +334,16 @@ public class Main {
                     totalComDegree+=cd;
                     instances++;
                 }
+                
             }
-
+            
         }
 
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("OR Query>>");
         System.out.println("BASIC: " + ((double) totalTime) / (runs * numQueries) + " ms");
+        
         System.out.println("Degree: " + ((double) totalComDegree) / instances);
         System.out.println("Diameter: " + ((double) totalDiameter) / instances);
         System.out.println("Density: " + ((double) totalDensity) / instances);
@@ -356,61 +355,19 @@ public class Main {
             for (int run = 0; run < runs; run++) {
                 PruneAndExplore solve = new PruneAndExplore(autoQuery.queries[0][i]);
             }
-=======
-        double totalScore = 0.0;
-        int instances = 0;
-        int numQueries = 25;
-
-        if (Constants.SHOW_OUTPUT == true) {
-            System.err.println("OUTPUT MUST BE DISABLED TO EVALUATE COMMUNITIES");
-            System.exit(0);
         }
 
-        String OUT_STAT_FILE = "betaVsQuality.txt";
-        FileWriter fw = null;
-        
-        try {
-            fw = new FileWriter(new File(OUT_STAT_FILE));
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        /*
-        Map<Double, Double> betaDensity = new HashMap<>();
-        Map<Double, Double> betaDiameter = new HashMap<>();
-        Map<Double, Double> betaCC = new HashMap<>();
-        Map<Double, Double> betaDegree = new HashMap<>();
-        */
-        
-        double defBeta = Constants.BETA;
-        try {
-            fw.write("OR Queries: \n");
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
->>>>>>> Quality Measures for Varying Beta Values
-        }
-        for (double beta = 0.00; beta <= 1.001; beta += 0.01) {
-            Constants.BETA = beta;
-            for (int i = 0; i < numQueries; i++) {
-                PruneAndExplore solve = new PruneAndExplore(autoQuery.queries[0][i]);
-                for (int r = 0; r < KICQ.r; r++) {
-                    Community c = solve.Q.remove();
-                    double t = c.density();
-                    if (t > 0.0) {
-                        //double cc = c.clusteringCoeff();
-                        double cd = c.degree();
-                        //double dm = c.diameter();
-                        totalDensity += t;
-                        //totalDiameter += dm;
-                        //CC += cc;
-                        totalComDegree += cd;
-                        totalScore+=c.avgInfScore(solve.qeg);
-                        instances++;
-                    }
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("PRUNE: " + ((double) totalTime) / (runs * numQueries) + " ms");
 
-                }
+        startTime = System.nanoTime();
+        int totalAccess = 0;
+        for (int i = 0; i < numQueries; i++) {
+            for (int run = 0; run < runs; run++) {
+                TreeExplore.nodesAccessed = 0;
+                TreeExplore solve = new TreeExplore(autoQuery.queries[0][i]);
             }
-<<<<<<< HEAD
             totalAccess += TreeExplore.nodesAccessed;
         }
         endTime = System.nanoTime();
@@ -419,18 +376,20 @@ public class Main {
         System.out.println("Nodes Accessed: " + ((double) totalAccess) / (numQueries));
 
         startTime = System.nanoTime();
+        
         totalComDegree = 0.0;
         totalDiameter = 0.0;
         totalDensity = 0.0;
         CC = 0.0;
         instances = 0;
+        
         for (int i = 0; i < numQueries; i++) {
             BasicExplore solve2 = null;
 
             for (int run = 0; run < runs; run++) {
                 solve2 = new BasicExplore(autoQuery.queries[1][i]);
             }
-
+            
             for (int r = 0; r < KICQ.r; r++) {
                 Community c = solve2.Q.remove();
                 double t = c.density();
@@ -445,106 +404,43 @@ public class Main {
                     instances++;
                 }
             }
+            
         }
 
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("AND Query >>");
         System.out.println("BASIC: " + ((double) totalTime) / (runs * numQueries) + " ms");
+        
         System.out.println("Degree: " + ((double) totalComDegree) / instances);
         System.out.println("Diameter: " + ((double) totalDiameter) / instances);
         System.out.println("Density: " + ((double) totalDensity) / instances);
         System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
-
+        
         startTime = System.nanoTime();
         for (int i = 0; i < numQueries; i++) {
             for (int run = 0; run < runs; run++) {
-=======
-            
-            try
-            {
-                fw.write("Beta: "+beta+"\n");
-                fw.write("Degree: " + ((double) totalComDegree) / instances+"\n");
-                fw.write("Density: " + ((double) totalDensity) / instances+"\n");
-                fw.write("Average Score: " + ((double) totalScore) / instances+"\n");
-                fw.flush();
-            }
-            catch(IOException e)
-            {
-                System.err.print(e);
-            }
-            
-            totalComDegree = 0;
-            totalDensity = 0;
-            totalDiameter = 0;
-            totalScore = 0;
-            CC = 0;
-            instances = 0;
-        }
-        
-        try {
-            fw.write("AND Queries: \n");
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        for (double beta = 0.0; beta <= 1.001; beta += 0.01) {
-            Constants.BETA = beta;
-            for (int i = 0; i < numQueries; i++) {
->>>>>>> Quality Measures for Varying Beta Values
                 PruneAndExplore solve = new PruneAndExplore(autoQuery.queries[1][i]);
-                for (int r = 0; r < KICQ.r; r++) {
-                    Community c = solve.Q.remove();
-                    double t = c.density();
-                    if (t > 0.0) {
-                        //double cc = c.clusteringCoeff();
-                        double cd = c.degree();
-                        //double dm = c.diameter();
-                        totalDensity += t;
-                        //totalDiameter += dm;
-                        //CC += cc;
-                        totalComDegree += cd;
-                        totalScore+=c.avgInfScore(solve.qeg);
-                        instances++;
-                    }
-                }
             }
-            
-            try
-            {
-                fw.write("Beta: "+beta+"\n");
-                fw.write("Degree: " + ((double) totalComDegree) / instances+"\n");
-                //fw.write("Diameter: " + ((double) totalDiameter) / instances+"\n");
-                fw.write("Density: " + ((double) totalDensity) / instances+"\n");
-                fw.write("Average Score: " + ((double) totalScore) / instances+"\n");
-                fw.flush();
-            }
-            catch(IOException e)
-            {
-                System.err.print(e);
-            }
-            
-            totalComDegree = 0;
-            totalDensity = 0;
-            totalDiameter = 0;
-            CC = 0;
-            totalScore = 0;
-            instances = 0;
         }
-<<<<<<< HEAD
+
+        endTime = System.nanoTime();
+        totalTime = (endTime - startTime) / (1000000);
+        System.out.println("PRUNE: " + ((double) totalTime) / (runs * numQueries) + " ms");
+
+        startTime = System.nanoTime();
+        totalAccess = 0;
+        for (int i = 0; i < numQueries; i++) {
+            for (int run = 0; run < runs; run++) {
+                TreeExplore.nodesAccessed = 0;
+                TreeExplore solve = new TreeExplore(autoQuery.queries[1][i]);
+            }
+            totalAccess += TreeExplore.nodesAccessed;
+        }
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("TREE: " + ((double) totalTime) / (runs * numQueries) + " ms");
 
         System.out.println("Nodes Accessed: " + ((double) totalAccess) / (numQueries));
-=======
-        
-        try {
-            fw.close();
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Constants.BETA = defBeta;
->>>>>>> Quality Measures for Varying Beta Values
     }
 }
