@@ -257,21 +257,6 @@ public class Main {
         authors = new Author[Constants.MAX_AUTH_ID + 1];
         numVertices = Constants.MAX_AUTH_ID - Constants.MIN_AUTH_ID + 1;
 
-        /*
-        System.out.println(Constants.INPUT_DIR);
-        System.out.println(Constants.MIN_AUTH_ID);
-        System.out.println(Constants.MAX_AUTH_ID);
-        System.out.println(Constants.NUM_KEYWORDS);
-        System.out.println(Constants.MATCHING_THRESHOLD);
-        System.out.println(Constants.K_MIN);
-        System.out.println(Constants.TOP_R);
-        System.out.println(Constants.BETA);
-        System.out.println(Constants.LOAD_GRAPH);
-        System.out.println(Constants.COMPUTE_CL_TREE);
-        System.out.println(Constants.SHOW_OUTPUT);
-        System.out.println(Constants.DEBUG_MODE);
-        System.out.println(Constants.RUNS);
-         */
         if (Constants.LOAD_GRAPH) {
             //Compute graph from raw files
             loadGraph();
@@ -331,13 +316,13 @@ public class Main {
         
         for (int i = 0; i < numQueries; i++) {
             BasicExplore solve2 = null;
-
             for (int run = 0; run < runs; run++) {
                 solve2 = new BasicExplore(autoQuery.queries[0][i]);
             }
 
             for (int r = 0; r < KICQ.r; r++) {
                 Community c = solve2.Q.remove();
+                
                 double t = c.density();
                 if (t > 0.0) {
                     double cc = c.clusteringCoeff();
@@ -349,14 +334,16 @@ public class Main {
                     totalComDegree+=cd;
                     instances++;
                 }
+                
             }
-
+            
         }
 
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("OR Query>>");
         System.out.println("BASIC: " + ((double) totalTime) / (runs * numQueries) + " ms");
+        
         System.out.println("Degree: " + ((double) totalComDegree) / instances);
         System.out.println("Diameter: " + ((double) totalDiameter) / instances);
         System.out.println("Density: " + ((double) totalDensity) / instances);
@@ -389,18 +376,20 @@ public class Main {
         System.out.println("Nodes Accessed: " + ((double) totalAccess) / (numQueries));
 
         startTime = System.nanoTime();
+        
         totalComDegree = 0.0;
         totalDiameter = 0.0;
         totalDensity = 0.0;
         CC = 0.0;
         instances = 0;
+        
         for (int i = 0; i < numQueries; i++) {
             BasicExplore solve2 = null;
 
             for (int run = 0; run < runs; run++) {
                 solve2 = new BasicExplore(autoQuery.queries[1][i]);
             }
-
+            
             for (int r = 0; r < KICQ.r; r++) {
                 Community c = solve2.Q.remove();
                 double t = c.density();
@@ -415,17 +404,19 @@ public class Main {
                     instances++;
                 }
             }
+            
         }
 
         endTime = System.nanoTime();
         totalTime = (endTime - startTime) / (1000000);
         System.out.println("AND Query >>");
         System.out.println("BASIC: " + ((double) totalTime) / (runs * numQueries) + " ms");
+        
         System.out.println("Degree: " + ((double) totalComDegree) / instances);
         System.out.println("Diameter: " + ((double) totalDiameter) / instances);
         System.out.println("Density: " + ((double) totalDensity) / instances);
         System.out.println("Clustering Coefficient: " + ((double) CC) / instances);
-
+        
         startTime = System.nanoTime();
         for (int i = 0; i < numQueries; i++) {
             for (int run = 0; run < runs; run++) {

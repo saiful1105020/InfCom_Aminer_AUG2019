@@ -22,7 +22,7 @@ public class TreeExplore {
     KICQ kicq;
     static int nodesAccessed = 0;
     Set<Integer> relevantTreeNodes = new LinkedHashSet<Integer>();
-    //QEG qeg;
+    static QEG qeg;
 
     PriorityQueue<Community> Q;
 
@@ -62,6 +62,7 @@ public class TreeExplore {
         };
         this.Q = new PriorityQueue<Community>(KICQ.r, CommunityComparator);
 
+        TreeExplore.qeg = new QEG(kicq);
         this.solve();
 
         if (Constants.SHOW_OUTPUT) {
@@ -130,6 +131,7 @@ public class TreeExplore {
         double maxDesScore = maxDescendentScore(u);
         double rTopScore = this.Q.peek().getScore();
 
+        /*
         int n = kicq.keywords.length;        
         for (int i = 0; i < n; i++) {
             Set<Integer> termVertices = new HashSet<Integer>();
@@ -151,13 +153,14 @@ public class TreeExplore {
                 }
             }
         }
-
+        */
+        u.exclusiveVertexSet = new LinkedHashSet<>(TreeExplore.qeg.V);
+        u.exclusiveVertexSet.retainAll(u.vertexSet);
         
         if (maxDesScore > rTopScore) {
             for (TreeNode v : u.childNodes) {
                 if (relevantTreeNodes.contains(v.getTreeNodeId())) {
                     visitTree(v);
-                    //u.fullVertexSet.addAll(v.fullVertexSet);
                     v.exclusiveVertexSet.clear();
                 }
             }
@@ -169,9 +172,7 @@ public class TreeExplore {
         }
         
         //update max node score
-
         double maxNodeScore = maxNodeScore(u);
-
         rTopScore = this.Q.peek().getScore();
 
         if (u.getCohesionFactor() >= KICQ.k_min && maxNodeScore > rTopScore) {

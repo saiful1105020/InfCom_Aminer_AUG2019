@@ -81,6 +81,42 @@ public class QEG {
 
     }
     
+    public QEG(KICQ kicq, boolean noDecomposition) {
+        int n;
+        n = kicq.keywords.length;
+
+        for (int i = 0; i < n; i++) {
+            Set<Integer> termVertices = new HashSet<Integer>();
+            for (int j = 0; j < kicq.keywords[i].size(); j++) {
+                int keywordId = kicq.keywords[i].get(j);
+                Set<Integer> keywordVertices = GlobalInvertedList.IL[keywordId];
+                termVertices.addAll(keywordVertices);
+            }
+
+            if (kicq.predicate == Constants.OR_PREDICATE) {
+                this.V.addAll(termVertices);
+            } else {
+                if (i == 0) {
+                    this.V = new LinkedHashSet<Integer>(termVertices);
+                } else {
+                    this.V.retainAll(termVertices);
+                }
+            }
+        }
+
+        //System.out.println(this.V);
+        for (int nodeId : this.V) {
+            Node node = new Node(nodeId, kicq);
+            node.adjList.retainAll(this.V);
+            int deg = node.adjList.size();
+            if (deg > maxDegree) {
+                maxDegree = deg;
+            }
+            idNodeMap.put(nodeId, node);
+            //System.out.println(node);
+        }
+    }
+    
     public QEG(KICQ kicq, Set<Integer> vertexSet) {
         /*
         int n;
@@ -110,7 +146,7 @@ public class QEG {
         this.V = vertexSet;
         //System.out.println(this.V);
         for (int nodeId : this.V) {
-            Node node = new Node(nodeId, kicq);
+            Node node = new Node(TreeExplore.qeg.idNodeMap.get(nodeId));
             node.adjList.retainAll(this.V);
             
             int deg = node.adjList.size();

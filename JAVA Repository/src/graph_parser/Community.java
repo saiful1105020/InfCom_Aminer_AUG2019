@@ -241,6 +241,9 @@ public class Community {
         return dm;
     }
     
+    /*
+    Considering simple undirected graph (without edge weight)
+    */
     public double shortestPath(int source, int dest)
     {
         if(source==dest) return 0;

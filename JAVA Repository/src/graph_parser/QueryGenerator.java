@@ -28,7 +28,7 @@ public class QueryGenerator {
     
     public QueryGenerator() {
         try {
-            Scanner input = new Scanner(new File("Queries_100_random_random.txt"));
+            Scanner input = new Scanner(new File("Queries_100_random_co.txt"));
             int count=0;
             while(input.hasNext())
             {
